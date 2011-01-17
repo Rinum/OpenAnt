@@ -1,0 +1,8 @@
+Milestone points for the base 1v1
+<Oipo>
+Milestone 1: Get a working user interface with some basic graphics
+Milestone 2: Get networking done between server and client
+That is, the basic connect - send message stuff. Not the entire networking protocol.
+Milestone 3: Get a simple world modeled on the server, which the client neatly displays. This would include moving ants, without purpose
+Milestone 4: Make client able to directly move his owned ant, and make sure this propagates to both clients.
+Milestone 5: Create some basic AI and flesh out the notions of having a colony.
