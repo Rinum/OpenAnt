@@ -1,0 +1,12 @@
+Open Ant
+
+A multiplayer clone of Sim Ant.
+
+Uses OpenGL and PyQt.
+
+Dependencies:
+-python 2.6 or 2.7
+-pyopengl
+-pyqt
+-numpy
+
