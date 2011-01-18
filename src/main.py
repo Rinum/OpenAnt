@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
         
 
 if __name__ == '__main__':
-    app = QApplication(['Fantasia Majestical'])
+    app = QApplication(['OpenAnt'])
     window = MainWindow()
     window.show()
     window.start()

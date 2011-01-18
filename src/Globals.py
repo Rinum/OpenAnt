@@ -24,6 +24,9 @@
 vbos = False
 glwidget = None
 datadir = "../data/"
+pixelsize = 25
+mapheight = 100 
+mapwidth = 100 
 
 #gui
 #nothing here yet
