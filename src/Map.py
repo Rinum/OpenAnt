@@ -22,6 +22,8 @@ import os
 from GLWidget import *
 import Globals
 
+from random import *
+
 class Map():
     '''
     Class for generating maps
@@ -45,3 +47,9 @@ class Map():
         for fname in dirList:
             self.foliageTiles.append(fname)
     
+    def generateMap(self):
+        for x in range(64):
+            for y in range(48):
+                if(randint(0,10)>8):
+                    Globals.glwidget.createImage(self.foliageTilesPath + self.foliageTiles[randint(0, len(self.foliageTiles)-1)], 1, [1, 1, -1, -1], [x*24, y*24, -1, -1])
+                Globals.glwidget.createImage(self.groundTilesPath + self.groundTiles[randint(0, len(self.groundTiles)-1)], 0, [1, 1, -1, -1], [x*24, y*24, -1, -1])

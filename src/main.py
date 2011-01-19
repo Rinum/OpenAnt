@@ -33,6 +33,8 @@ if Globals.musicOn:
     from PyQt4.phonon import *
     from MusPanel import *
 
+from Map import *
+
 class MainWindow(QMainWindow):
     '''Wrapper class for...well, the game? Maybe this needs to be called the game engine then'''
 
@@ -55,10 +57,15 @@ class MainWindow(QMainWindow):
         self.drawTimer = QTimer()
         self.drawTimer.timeout.connect(self.drawTimerTimeout)
         self.drawTimer.start(13)
+
+        self.map=Map()
         
     def start(self):
         if Globals.musicOn:
             Globals.muspanel = MusPanel(self)
+
+        #draw map
+            self.map.generateMap()
 
     def drawTimerTimeout(self):
         Globals.glwidget.updateGL()
