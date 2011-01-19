@@ -13,7 +13,7 @@ Wishful Thinking: ??? PROFIT! ... maybe create a python based Game/MMO/Sim engin
 PROGRESS(%) - MILESTONES
               (Completed)->Sub-task
 
-(1%) - 1) Get a working user interface with some basic graphics
+(1%) - Get a working user interface with some basic graphics
           -> Tiles
              -> Ground
              -> Foliage
@@ -30,11 +30,11 @@ PROGRESS(%) - MILESTONES
           -> Controls
              -> Ant Class?
 
-(0%) - 2) Get networking done between server and client. That is, the basic connect - send message stuff. Not the entire networking protocol.
+(0%) - Get networking done between server and client. That is, the basic connect - send message stuff. Not the entire networking protocol.
 
 
-(0%) - 3) Get a simple world modeled on the server, which the client neatly displays. This would include moving ants, without purpose
+(0%) - Get a simple world modeled on the server, which the client neatly displays. This would include moving ants, without purpose
 
-(0%) 4) Make client able to directly move his owned ant, and make sure this propagates to both clients.
+(0%) - Make client able to directly move his owned ant, and make sure this propagates to both clients.
 
-(0%) 5) Create some basic AI and flesh out the notions of having a colony.
+(0%) - Create some basic AI and flesh out the notions of having a colony.
