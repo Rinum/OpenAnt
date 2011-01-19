@@ -101,7 +101,7 @@ class GLWidget(QGLWidget):
         Initialize GL
         '''
 
-        glEnable(GL_TEXTURE_RECTANGLE_ARB)
+        glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glDisable(GL_DEPTH_TEST)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -164,12 +164,12 @@ class GLWidget(QGLWidget):
             texture = glGenTextures(1)
             imgdata = img.bits().asstring(img.numBytes())
 
-            glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture)
+            glBindTexture(GL_TEXTURE_2D, texture)
 
-            glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
-            glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 
             self.qimages[qimagepath] = [texture, 1] #texture, reference count
         else:
@@ -269,7 +269,7 @@ class GLWidget(QGLWidget):
         drawRect is a list of size 4, is used to determine the drawing size
         '''
 
-        glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture)
+        glBindTexture(GL_TEXTURE_2D, texture)
 
         x, y, w, h = textureRect
         dx, dy, dw, dh = drawRect
