@@ -34,6 +34,7 @@ if Globals.musicOn:
     from MusPanel import *
 
 from Map import *
+from Ants import *
 
 class MainWindow(QMainWindow):
     '''Wrapper class for...well, the game? Maybe this needs to be called the game engine then'''
@@ -58,7 +59,8 @@ class MainWindow(QMainWindow):
         self.drawTimer.timeout.connect(self.drawTimerTimeout)
         self.drawTimer.start(13)
 
-        self.map=Map()
+        self.map=Map()#map class
+        self.ant=Ants(320,240)#ants class
         
     def start(self):
         if Globals.musicOn:
@@ -66,6 +68,8 @@ class MainWindow(QMainWindow):
 
         #draw map
             self.map.generateMap()
+        #draw ant
+            self.ant.drawAnt()
 
     def drawTimerTimeout(self):
         Globals.glwidget.updateGL()
