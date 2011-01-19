@@ -143,10 +143,12 @@ static PyObject * glmod_init(PyObject *self, PyObject* args)
     ok = PyArg_ParseTuple(args, "i", &extension);
 
     if(!ok)
-        return PyInt_FromLong(-1L);
+        return PyInt_FromLong(-1L); //Parse error
 
 #ifdef _WIN32
-    glBindBuffer = (PFNGLBINDBUFFERARBPROC)wglGetProcAddress("glBindBuffer");
+    glBindBuffer = (PFNGLBINDBUFFERARBPROC)wglGetProcAddress("glBindBufferARB");
+    if(glBindBuffer == NULL)
+        return PyInt_FromLong(-2L); //Init went ok, but couldn't get glBindBuffer
 #endif
 
     return PyInt_FromLong(0L);

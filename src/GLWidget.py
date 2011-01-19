@@ -120,6 +120,7 @@ class GLWidget(QGLWidget):
         global mod
 
         if not hasGLExtension("GL_TEXTURE_RECTANGLE_ARB"):
+            print "GL_TEXTURE_RECTANGLE_ARB not supported, switching to GL_TEXTURE_2D"
             self.texext = GL_TEXTURE_2D
 
         glEnable(self.texext)
@@ -130,18 +131,25 @@ class GLWidget(QGLWidget):
         glClearColor(0.0, 0.0, 0.0, 0.0)
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
 
+        initok = False
         if mod:
-            if glmod.init(self.texext) == -1:
+            ret = glmod.init(self.texext)
+            if ret == -1:
                 print "Something terrible went wrong in initializing glmod"
                 mod = False
+            elif ret == -2:
+                print "using gl module without VBO support"
             else:
-                print "using gl module"
+                initok = True
+                print "using gl module with VBO support"
 
-        if mod and glInitVertexBufferObjectARB():
-            if bool(glBindBuffer):
+        if mod and initok:
+            if glInitVertexBufferObjectARB() and bool(glBindBufferARB):
                 Globals.vbos = True
-                print "using VBOs"
+                print "VBO support initialised succesfully"
                 self.VBO = int(glGenBuffersARB(1))
+            else:
+                print "VBO support initialisation failed, continuing without"
 
         for x in range(2):
             for y in range(2):
@@ -221,11 +229,11 @@ class GLWidget(QGLWidget):
         self.images[layer].append(image)
 
         if Globals.vbos:
-            print self.VBO, self.qimages[qimagepath], image
             image.VBO = self.VBO
 
             self.fillBuffers(image)
-            self.qimages[qimagepath].append(image.offset)
+            if len(self.qimages[qimagepath]) == 2:
+                self.qimages[qimagepath].append(image.offset)
 
             self.calculateVBOList(image)
 
@@ -241,12 +249,12 @@ class GLWidget(QGLWidget):
         for layer in self.layers:
             size += len(self.images[layer])
 
-        glBindBuffer(GL_ARRAY_BUFFER_ARB, self.VBO)
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, self.VBO)
 
         if self.VBOBuffer <= size or image == None:
             self.VBOBuffer = nextPowerOfTwo(size+1)
 
-            glBufferData(GL_ARRAY_BUFFER_ARB, self.VBOBuffer*vertByteCount, None, GL_STATIC_DRAW_ARB)
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, self.VBOBuffer*vertByteCount, None, GL_STATIC_DRAW_ARB)
 
             self.offset = 0
 
@@ -255,14 +263,14 @@ class GLWidget(QGLWidget):
                     img.offset = int(float(self.offset)/vertByteCount*4)
                     VBOData = img.getVBOData()
 
-                    glBufferSubData(GL_ARRAY_BUFFER_ARB, self.offset, vertByteCount, VBOData)
+                    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, self.offset, vertByteCount, VBOData)
                     self.offset += vertByteCount
 
         else:
             image.offset = int(float(self.offset)/vertByteCount*4)
             VBOData = image.getVBOData()
 
-            glBufferSubData(GL_ARRAY_BUFFER_ARB, self.offset, vertByteCount, VBOData)
+            glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, self.offset, vertByteCount, VBOData)
             self.offset += vertByteCount
 
     def deleteImage(self, image):
