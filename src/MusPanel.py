@@ -97,7 +97,7 @@ class MusPanel(QDockWidget):
                 self.addFilesInDir(dir + '/' + file)
 
         for file in fdir:
-            if file[-3:] == "mp3":
+            if file[-3:] == "ogg":
                 self.musicList.addItem(fileItem(file, dir, self))
 
     def updateList(self):
