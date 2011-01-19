@@ -1,3 +1,4 @@
 *.pyc
 glmod.so
+glmod.pyd
 Thumbs.db
