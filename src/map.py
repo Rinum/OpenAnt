@@ -38,10 +38,10 @@ class Map():
         #Populate list of ground tiles
         dirList=os.listdir(self.groundTilesPath)
         for fname in dirList:
-            self.groundTiles.append(self.groundTilesPath+fname)
+            self.groundTiles.append(fname)
 
         #Populate list of foliage tiles
         dirList=os.listdir(self.foliageTilesPath)
         for fname in dirList:
-            self.foliageTiles.append(self.foliageTilesPath+fname)
+            self.foliageTiles.append(fname)
     
