@@ -119,7 +119,7 @@ class GLWidget(QGLWidget):
         '''
         global mod
 
-        if not hasGLExtension("GL_TEXTURE_RECTANGLE_ARB"):
+        if not hasGLExtension("GL_ARB_texture_rectangle"):
             print "GL_TEXTURE_RECTANGLE_ARB not supported, switching to GL_TEXTURE_2D"
             self.texext = GL_TEXTURE_2D
 
@@ -150,10 +150,6 @@ class GLWidget(QGLWidget):
                 self.VBO = int(glGenBuffersARB(1))
             else:
                 print "VBO support initialisation failed, continuing without"
-
-        for x in range(2):
-            for y in range(2):
-                self.createImage(Globals.datadir + "images/ground2.png", 3, [0, 0, -1, -1], [x*24, y*24, -1, -1])
 
     #util functions
     def createImage(self, qimagepath, layer, textureRect, drawRect, hidden = False, dynamicity = GL_STATIC_DRAW_ARB):

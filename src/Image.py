@@ -61,11 +61,17 @@ class Image(object):
             self._hidden = hide
             Globals.glwidget.hideImage(self, hide)
 
+    def width(self):
+        return self.drawRect[2]
+
+    def height(self):
+        return self.drawRect[3]
+
     def setDrawRect(self, drawRect):
         self.drawRect = drawRect
 
         if Globals.vbos:
-            VBOData = self.createVBOData()
+            VBOData = self.getVBOData()
             vertByteCount = ADT.arrayByteCount(VBOData)
 
             glBindBuffer(GL_ARRAY_BUFFER_ARB, self.VBO)
