@@ -153,7 +153,7 @@ class GLWidget(QGLWidget):
 
         for x in range(2):
             for y in range(2):
-                self.createImage(Globals.datadir + "images/ground2.png", 3, [0, 0, -1, -1], [x*24, y*24, -1, -1])
+                self.createImage(Globals.datadir + "images/ground/ground2.png", 3, [0, 0, -1, -1], [x*24, y*24, -1, -1])
 
     #util functions
     def createImage(self, qimagepath, layer, textureRect, drawRect, hidden = False, dynamicity = GL_STATIC_DRAW_ARB):
