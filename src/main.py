@@ -1,4 +1,5 @@
-﻿# -*- coding: utf-8 -*-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 # This file is part of Open Ant.
 #
