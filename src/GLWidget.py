@@ -54,7 +54,7 @@ class GLWidget(QGLWidget):
         self.lastMousePos = [0, 0]
         self.camera = [0, 0]
         self.layers = []
-        self.zoom = 1
+        self.zoom = 100
         self.VBO = None
         self.VBOBuffer = 0
         self.offset = 0
@@ -114,10 +114,9 @@ class GLWidget(QGLWidget):
             Globals.vbos = True
             print "using VBOs"
             self.VBO = int(glGenBuffersARB(1))
-
-        for x in range(2):
-            for y in range(2):
-                self.createImage(Globals.datadir + "images/test.png", 3, [0, 0, -1, -1], [x*16, y*16, -1, -1])
+            
+	self.createImage(Globals.datadir + "images/ground1.png", 1, [-1, -1, -1, -1], [-1, -1, -1, -1])	
+	self.createImage(Globals.datadir + "images/blackAnt.png", 3, [1, 1, 1, 1], [1, 1, 1, 1])
 
     #util functions
     def createImage(self, qimagepath, layer, textureRect, drawRect, hidden = False, dynamicity = GL_STATIC_DRAW_ARB):
@@ -351,11 +350,11 @@ class GLWidget(QGLWidget):
             self.zoom -= 0.15
         elif mouse.delta() > 0:
             self.zoom += 0.15
-
-        if self.zoom < 0.30:
-            self.zoom = 0.30
-        elif self.zoom > 4:
-            self.zoom = 4
+       # 
+       # if self.zoom < 0.30:
+       #     self.zoom = 0.30
+       # elif self.zoom > 4:
+       #     self.zoom = 4
 
         self.camera[0] = oldCoord2[0] * self.zoom - ((oldCoord[0]*self.zoom)-mouse.pos().x())
         self.camera[1] = oldCoord2[1] * self.zoom - ((oldCoord[1]*self.zoom)-mouse.pos().y())
