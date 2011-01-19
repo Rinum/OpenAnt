@@ -21,9 +21,10 @@ int *texid, *offsets, VBO, stride, arrSize;
 
 static PyObject * glmod_drawTexture(PyObject *self, PyObject* args)
 {
-    int texid, x, y, w, h, cx, cy, cw, ch, ok;
+    int texid, ok;
+    float x, y, w, h, cx, cy, cw, ch;
 
-    ok = PyArg_ParseTuple(args, "iiiiiiiii", &texid, &x, &y, &w, &h, &cx, &cy, &cw, &ch);
+    ok = PyArg_ParseTuple(args, "iffffffff", &texid, &x, &y, &w, &h, &cx, &cy, &cw, &ch);
 
     if(!ok)
        return PyInt_FromLong(-1L); 
@@ -32,20 +33,20 @@ static PyObject * glmod_drawTexture(PyObject *self, PyObject* args)
 
     glBegin(GL_QUADS);
     //Top-left vertex (corner)
-    glTexCoord2i(cx, cy+ch); //image/texture
-    glVertex3i(x, y, 0); //_screen coordinates
+    glTexCoord2f(cx, cy+ch); //image/texture
+    glVertex3f(x, y, 0); //_screen coordinates
 
     //Bottom-left vertex (corner)
-    glTexCoord2i(cx+cw, cy+ch);
-    glVertex3i(x+w, y, 0);
+    glTexCoord2f(cx+cw, cy+ch);
+    glVertex3f(x+w, y, 0);
 
     //Bottom-right vertex (corner)
-    glTexCoord2i(cx+cw, cy);
-    glVertex3i(x+w, y+h, 0);
+    glTexCoord2f(cx+cw, cy);
+    glVertex3f(x+w, y+h, 0);
 
     //Top-right vertex (corner)
-    glTexCoord2i(cx, cy);
-    glVertex3i(x, y+h, 0);
+    glTexCoord2f(cx, cy);
+    glVertex3f(x, y+h, 0);
     glEnd();
 
     return PyInt_FromLong(0L);
@@ -134,8 +135,15 @@ static PyObject * glmod_generateTexture(PyObject *self, PyObject* args)
 
 static PyObject * glmod_init(PyObject *self, PyObject* args)
 {
+    int ok;
+
     texid = NULL;
     offsets = NULL;
+
+    ok = PyArg_ParseTuple(args, "i", &extension);
+
+    if(!ok)
+        return PyInt_FromLong(-1L);
 
 #ifdef _WIN32
     glBindBuffer = (PFNGLBINDBUFFERARBPROC)wglGetProcAddress("glBindBuffer");
@@ -150,30 +158,10 @@ static PyObject * glmod_clear(PyObject *self, PyObject* args)
     return PyInt_FromLong(0L);
 }
 
-//blatantly stolen from Box2D
-static PyObject * glmod_nextPowerOfTwo(PyObject *self, PyObject* args)
-{
-    int x, ok;
-
-    ok = PyArg_ParseTuple(args, "i", &x);
-
-    if(!ok)
-        return PyInt_FromLong(-1L);
-
-    x |= (x >> 1);
-    x |= (x >> 2);
-    x |= (x >> 4);
-    x |= (x >> 8);
-    x |= (x >> 16);
-    x++;
-    return PyInt_FromLong(x);
-}
-
 static PyMethodDef GLModMethods[] = {
     {"drawTexture",  glmod_drawTexture, METH_VARARGS, "draw a texture"},
     {"drawVBO",  glmod_drawVBO, METH_VARARGS, "draw the list of texids with VBO"},
     {"setVBO",  glmod_setVBO, METH_VARARGS, "set the list of texids"},
-    {"nextPowerOfTwo",  glmod_nextPowerOfTwo, METH_VARARGS, "glBufferData"},
     {"generateTexture",  glmod_generateTexture, METH_VARARGS, "generate texture id"},
     {"clear",  glmod_clear, METH_VARARGS, "clear"},
     {"init",  glmod_init, METH_VARARGS, "init"},
