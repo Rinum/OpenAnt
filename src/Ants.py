@@ -23,6 +23,8 @@ from GLWidget import *
 import Globals
 from PyQt4.QtCore import *
 
+import time
+
 class Ants():
     '''
     Class for generating ants
@@ -32,6 +34,7 @@ class Ants():
         self.xpos = xpos
         self.ypos = ypos
         self.sprite = None
+        self.clickTime = 0#waiting for double click
         Globals.glwidget.mousePress.connect(self.getCoords)
 
     def drawAnt(self):
@@ -51,6 +54,10 @@ class Ants():
 	    self.sprite.setDrawRect([x, y, 24, 24])
 
     def getCoords(self, button, x, y):
-	print button
-	if(button == -1):
+        '''
+        On double click, move ant
+        '''
+	timeDiff = time.time()-self.clickTime
+	self.clickTime = time.time()
+	if( button == 1 and timeDiff<=0.25 ):
 	    self.move(x, y)
