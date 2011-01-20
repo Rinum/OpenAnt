@@ -369,7 +369,6 @@ class GLWidget(QGLWidget):
             button = 2
         elif mouse.button == Qt.MidButton:
             button = 3
-
         self.mousePress.emit(button, (mouse.pos().x()-self.camera[0])/self.zoom, (mouse.pos().y()-self.camera[1])/self.zoom)
 
         mouse.accept()

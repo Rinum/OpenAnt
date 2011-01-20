@@ -21,8 +21,7 @@ import os
 
 from GLWidget import *
 import Globals
-
-from random import *
+from PyQt4.QtCore import *
 
 class Ants():
     '''
@@ -32,7 +31,26 @@ class Ants():
         #initialize ant position to (xpos,ypos)
         self.xpos = xpos
         self.ypos = ypos
+        self.sprite = None
+        Globals.glwidget.mousePress.connect(self.getCoords)
 
     def drawAnt(self):
         #create ant
-        Globals.glwidget.createImage(Globals.datadir+'images/yellowAnt.png', 2, [1, 1, -1, -1], [self.xpos, self.ypos, -1, -1])
+        self.sprite = Globals.glwidget.createImage(Globals.datadir+'images/yellowAnt.png', 2, [1, 1, -1, -1], [self.xpos, self.ypos, -1, -1])
+
+    def move(self, x, y):
+	while (self.xpos != x) and (self.ypos != y):
+            if self.xpos < x:
+                self.xpos += 1 
+            elif self.xpos > x:
+                self.xpos -= 1 
+            if self.ypos < y:
+                self.ypos += 1 
+            elif self.ypos > y:
+                self.ypos -= 1
+	    self.sprite.setDrawRect([x, y, 24, 24])
+
+    def getCoords(self, button, x, y):
+	print button
+	if(button == -1):
+	    self.move(x, y)
