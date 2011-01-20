@@ -24,6 +24,7 @@ import Globals
 from PyQt4.QtCore import *
 
 import time
+from threading import Timer
 
 class Ants():
     '''
@@ -42,16 +43,23 @@ class Ants():
         self.sprite = Globals.glwidget.createImage(Globals.datadir+'images/yellowAnt.png', 2, [1, 1, -1, -1], [self.xpos, self.ypos, -1, -1])
 
     def move(self, x, y):
-	while (self.xpos != x) and (self.ypos != y):
-            if self.xpos < x:
-                self.xpos += 1 
-            elif self.xpos > x:
-                self.xpos -= 1 
-            if self.ypos < y:
-                self.ypos += 1 
-            elif self.ypos > y:
-                self.ypos -= 1
-	    self.sprite.setDrawRect([x, y, 24, 24])
+    	try: # We try and cancel any previous movements.
+	    self.t.cancel()
+	except:
+	    pass
+	# TODO: Implement a path finding algrothem like A*
+        if self.xpos < x:
+            self.xpos += 1 
+        elif self.xpos > x:
+            self.xpos -= 1 
+        if self.ypos < y:
+            self.ypos += 1 
+        elif self.ypos > y:
+            self.ypos -= 1
+	self.sprite.setDrawRect([self.xpos, self.ypos, 24, 24]) # Update sprite location.
+	if (self.xpos != x) or (self.ypos != y): # If we havn't reached our destination, Schedule another call to move.
+	    self.t = Timer(0.03, self.move, (x, y))
+	    self.t.start()
 
     def getCoords(self, button, x, y):
         '''
