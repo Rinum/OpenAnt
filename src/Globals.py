@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # This file is part of Open Ant.
 #
@@ -23,6 +23,8 @@
 #general
 vbos = False
 glwidget = None
+player = None
+overMap= None
 datadir = "../data/"
 pixelsize = 25
 mapheight = 100 

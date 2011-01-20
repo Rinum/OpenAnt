@@ -32,9 +32,11 @@ import Globals
 
 mod = False
 try:
+    print "Loading GLMod"
     import glmod
     mod = True
 except:
+    print "Failed!"
     pass
 
 from Image import *
@@ -115,8 +117,6 @@ class GLWidget(QGLWidget):
             print "using VBOs"
             self.VBO = int(glGenBuffersARB(1))
 
-	self.createImage(Globals.datadir + "images/tile-dirt.png", 2, [0, 0, -1, -1], [0, 0, -1, -1])
-        self.createImage(Globals.datadir + "images/ant-player.png", 3, [0, 0, -1, -1], [1, 1, -1, -1])
 
     #util functions
     def createImage(self, qimagepath, layer, textureRect, drawRect, hidden = False, dynamicity = GL_STATIC_DRAW_ARB):
@@ -250,9 +250,7 @@ class GLWidget(QGLWidget):
             self.calculateVBOList()
 
     def drawImage(self, image):
-	if image.layer == 2:
-		self.drawBG(image)
-        if image.hidden or image.layer==2:
+        if image.hidden:
             return
 
         if mod:
@@ -262,11 +260,6 @@ class GLWidget(QGLWidget):
             glmod.drawTexture(image.textureId, dx, dy, dw, dh, x, y, w, h)
         else:
             self.drawTexture(image.textureId, image.textureRect, image.drawRect)
-
-    def drawBG(self, image):
-	for y in xrange(0, Globals.mapheight, 2):
-	    for x in xrange(0, Globals.mapwidth,2):
-		self.drawTexture(image.textureId, image.textureRect, [((Globals.pixelsize*(x/2))-x), ((Globals.pixelsize*(y/2))-y), Globals.pixelsize, Globals.pixelsize])
 
     def drawTexture(self, texture, textureRect, drawRect):
         '''

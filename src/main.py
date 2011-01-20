@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # This file is part of Open Ant.
 #
@@ -26,6 +26,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from GLWidget import *
+from Map import *
+from Ant import *
 import Globals
 
 if Globals.musicOn:
@@ -58,9 +60,13 @@ class MainWindow(QMainWindow):
     def start(self):
         if Globals.musicOn:
             Globals.muspanel = MusPanel(self)
-
+        Globals.overMap = Map()
+        Globals.player = Ant()
+        
     def drawTimerTimeout(self):
         Globals.glwidget.updateGL()
+
+        
         
 
 if __name__ == '__main__':
