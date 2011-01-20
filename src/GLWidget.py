@@ -133,14 +133,6 @@ class GLWidget(QGLWidget):
         glClearColor(0.0, 0.0, 0.0, 0.0)
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
 
-<<<<<<< HEAD
-        if mod and glInitVertexBufferObjectARB():
-            glmod.init()
-            Globals.vbos = True
-            print "using VBOs"
-            self.VBO = int(glGenBuffersARB(1))
-
-=======
         initok = False
         if mod:
             ret = glmod.init(self.texext)
@@ -160,7 +152,6 @@ class GLWidget(QGLWidget):
                 self.VBO = int(glGenBuffersARB(1))
             else:
                 print "VBO support initialisation failed, continuing without"
->>>>>>> 8a27e088b2832d0b391f84cdd99f08e249bb9a7d
 
     #util functions
     def createImage(self, qimagepath, layer, textureRect, drawRect, hidden = False, dynamicity = GL_STATIC_DRAW_ARB):

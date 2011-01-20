@@ -1,5 +1,4 @@
 import Globals
-import time
 from GLWidget import *
 from PyQt4.QtCore import *
 
@@ -22,8 +21,8 @@ class Ant():
             elif self.posY > y:
                 self.posY -= 1
 	    self.sprite.setDrawRect([x, y, Globals.pixelsize, Globals.pixelsize])
-	    time.sleep(1)
 
     def getCoords(self, button, x, y):
+	print button
 	if(button == -1):
 	    self.move(x, y)

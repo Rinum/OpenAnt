@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 #!/usr/bin/python
->>>>>>> 8a27e088b2832d0b391f84cdd99f08e249bb9a7d
 # -*- coding: utf-8 -*-
 #
 # This file is part of Open Ant.
@@ -69,9 +66,7 @@ class MainWindow(QMainWindow):
         
     def drawTimerTimeout(self):
         Globals.glwidget.updateGL()
-
-        
-        
+ 
 
 if __name__ == '__main__':
     app = QApplication(['OpenAnt'])
