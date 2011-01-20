@@ -40,7 +40,7 @@ class Ants():
 
     def drawAnt(self):
         #create ant
-        self.sprite = Globals.glwidget.createImage(Globals.datadir+'images/yellowAnt.png', 2, [1, 1, -1, -1], [self.xpos, self.ypos, -1, -1])
+        self.sprite = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/S.png', 2, [1, 1, -1, -1], [self.xpos, self.ypos, -1, -1])
 
     def move(self, x, y):
     	try: # We try and cancel any previous movements.
