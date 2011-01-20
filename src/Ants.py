@@ -68,4 +68,4 @@ class Ants():
 	timeDiff = time.time()-self.clickTime
 	self.clickTime = time.time()
 	if( button == 1 and timeDiff<=0.25 ):
-	    self.move(x, y)
+	    self.move(x - self.sprite.width() /2, y - self.sprite.height() /2)
