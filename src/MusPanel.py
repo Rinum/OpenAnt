@@ -34,8 +34,8 @@ class fileItem(QListWidgetItem):
         QListWidgetItem.__init__(self)
         self.file = file
         self.dir = dir
-        
-        self.setText(file[5:len(file)-3])
+
+        self.setText(file)
         
 class musicListWidget(QListWidget):
 
@@ -91,13 +91,13 @@ class MusPanel(QDockWidget):
 
     def addFilesInDir(self, dir):
         fdir = os.listdir(dir)
-        
+
         for file in fdir:
             if os.path.isdir(dir + '/' + file):
                 self.addFilesInDir(dir + '/' + file)
 
         for file in fdir:
-            if file[-3:] == "mp3":
+            if file[-3:] == "ogg":
                 self.musicList.addItem(fileItem(file, dir, self))
 
     def updateList(self):

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # This file is part of Open Ant.
 #
@@ -33,7 +33,7 @@ class Image(object):
     Class for storing image data, position and some opengl stuff
     '''
 
-    def __init__(self, imagepath, textureRect, drawRect, layer, hidden, dynamicity):
+    def __init__(self, imagepath, qimg, textureRect, drawRect, layer, hidden, dynamicity):
         self.imagepath = imagepath
         self.drawRect = drawRect
         self.textureRect = textureRect
@@ -43,6 +43,13 @@ class Image(object):
         self.offset = None
         self.VBO = None
         self._hidden = hidden
+
+        if Globals.glwidget.texext == GL_TEXTURE_2D:
+            x = float(textureRect[0])/float(qimg.width())
+            y = float(textureRect[1])/float(qimg.height())
+            w = float(textureRect[2])/float(qimg.width())
+            h = float(textureRect[3])/float(qimg.height())
+            self.textureRect = [x, y, w, h]
 
     @property
     def hidden(self):
@@ -54,15 +61,21 @@ class Image(object):
             self._hidden = hide
             Globals.glwidget.hideImage(self, hide)
 
+    def width(self):
+        return self.drawRect[2]
+
+    def height(self):
+        return self.drawRect[3]
+
     def setDrawRect(self, drawRect):
         self.drawRect = drawRect
 
         if Globals.vbos:
-            VBOData = self.createVBOData()
+            VBOData = self.getVBOData()
             vertByteCount = ADT.arrayByteCount(VBOData)
 
             glBindBuffer(GL_ARRAY_BUFFER_ARB, self.VBO)
-            glBufferSubData(GL_ARRAY_BUFFER_ARB, self.offset*vertByteCount, vertByteCount, VBOData)
+            glBufferSubData(GL_ARRAY_BUFFER_ARB, int(self.offset*vertByteCount/4), vertByteCount, VBOData)
 
     def getVBOData(self):
         x, y, w, h = self.textureRect
