@@ -27,7 +27,7 @@ from OpenGL.GL.ARB.vertex_buffer_object import *
 from OpenGL.arrays import ArrayDatatype as ADT
 
 #Only set these when creating non-development code
-#OpenGL.ERROR_CHECKING = False
+OpenGL.ERROR_CHECKING = False
 #OpenGL.ERROR_LOGGING = False
 
 from PyQt4.QtCore import *
