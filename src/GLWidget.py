@@ -67,6 +67,8 @@ class GLWidget(QGLWidget):
     def __init__(self, parent):
         QGLWidget.__init__(self, parent)
         self.setMinimumSize(640, 480)
+	self.w = 640
+        self.h = 480
         self.x = 0
         self.images = dict()
         self.lastMousePos = [0, 0]
@@ -114,6 +116,8 @@ class GLWidget(QGLWidget):
         glOrtho(0, w, h, 0, -1, 1)
         glMatrixMode(GL_MODELVIEW)
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
+	self.w = w
+        self.h = h
 
     def initializeGL(self):
         '''
@@ -307,10 +311,16 @@ class GLWidget(QGLWidget):
         drawRect is a list of size 4, is used to determine the drawing size
         '''
 
-        glBindTexture(self.texext, texture)
-
         x, y, w, h = textureRect
         dx, dy, dw, dh = drawRect
+
+	cx, cy = self.camera
+
+        # Culling
+	if (dx > self.w - cx) or (dy > self.h - cy) or (dx + dw < 0-cx) or (dy + dh < 0-cy):
+            return
+
+        glBindTexture(self.texext, texture)
 
         glBegin(GL_QUADS)
         #Top-left vertex (corner)
@@ -396,5 +406,6 @@ class GLWidget(QGLWidget):
 
         self.camera[0] = oldCoord2[0] * self.zoom - ((oldCoord[0]*self.zoom)-mouse.pos().x())
         self.camera[1] = oldCoord2[1] * self.zoom - ((oldCoord[1]*self.zoom)-mouse.pos().y())
+
 
         mouse.accept()
