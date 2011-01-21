@@ -7,8 +7,6 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Open Ant is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
@@ -38,6 +36,7 @@ class Map():
     Class for generating maps
     '''
     def __init__(self):
+        self.tiles = [[None]*40 for _ in range(40)]
         #Ground tiles
         self.groundTilesPath = Globals.datadir+'images/ground/'
         self.groundTiles = []
@@ -59,13 +58,8 @@ class Map():
         self.array = numpy.empty([640/24, 480/24], dtype=object)
     
     def generateMap(self):
-        for x in range(len(self.array)):
-            for y in range(len(self.array[0])):
+        for x in range(40):
+            for y in range(40):
                 if(randint(0,10)>8):
-                    self.array[x, y] = Tile(Globals.glwidget.createImage(self.foliageTilesPath +
-                                    self.foliageTiles[randint(0, len(self.foliageTiles)-1)],
-                                    1, [1, 1, -1, -1], [x*24, y*24, -1, -1]), False)
-                self.array[x, y] = Tile(Globals.glwidget.createImage(self.groundTilesPath +
-                                self.groundTiles[randint(0, len(self.groundTiles)-1)],
-                                0, [1, 1, -1, -1], [x*24, y*24, -1, -1]), True)
-
+                    self.tiles[x][y] = Tile(Globals.glwidget.createImage(self.foliageTilesPath + self.foliageTiles[randint(0, len(self.foliageTiles)-1)], 1, [1, 1, -1, -1], [x*24, y*24, -1, -1]), 1)
+                self.tiles[x][y] = Tile(Globals.glwidget.createImage(self.groundTilesPath + self.groundTiles[randint(0, len(self.groundTiles)-1)], 0, [1, 1, -1, -1], [x*24, y*24, -1, -1]), 1)

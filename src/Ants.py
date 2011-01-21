@@ -32,8 +32,8 @@ class Ants():
     '''
     def __init__(self,xpos,ypos):
         #initialize ant position to (xpos,ypos)
-        self.xpos = xpos
-        self.ypos = ypos
+        self.xpos = xpos*24
+        self.ypos = ypos*24
         self.sprite = None
         self.clickTime = 0#waiting for double click
         self.direction = "self.S"
@@ -57,33 +57,35 @@ class Ants():
 	except:
 	    pass
 	# TODO: Implement a path finding algrothem like A*
-        if self.xpos < x:
+	newDirection = ""
+        if self.xpos/24 < x:
             self.xpos += 1
             newDirection = "E"
-        elif self.xpos > x:
+        elif self.xpos/24 > x:
             self.xpos -= 1
             newDirection = "W"
-        if self.ypos < y:
+        if self.ypos/24 < y:
             self.ypos += 1
             newDirection = "S"+newDirection
-        elif self.ypos > y:
+        elif self.ypos/24 > y:
             self.ypos -= 1
             newDirection = "N"+newDirection
-        newDirection = "self."+newDirection
-        if(self.direction != newDirection):
-            self.sprite.setDrawRect([-100, -100, 24, 24]) # Update sprite location.
-            self.sprite = eval(newDirection)
-            self.Direction = newDirection
-	self.sprite.setDrawRect([self.xpos, self.ypos, 24, 24]) # Update sprite location.
-	if (self.xpos != x) or (self.ypos != y): # If we havn't reached our destination, Schedule another call to move.
-	    self.t = Timer(0.03, self.move, (x, y))
-	    self.t.start()
+        if newDirection != "":
+            newDirection = "self."+newDirection
+            if(self.direction != newDirection):
+                self.sprite.setDrawRect([-100, -100, 24, 24]) # Update sprite location.
+                self.sprite = eval(newDirection)
+                self.direction = newDirection
+            self.sprite.setDrawRect([self.xpos, self.ypos, 24, 24]) # Update sprite location.
+            if (self.xpos != x) or (self.ypos != y): # If we havn't reached our destination, Schedule another call to move.
+                self.t = Timer(0.03, self.move, (x, y))
+                self.t.start()
 
     def getCoords(self, button, x, y):
         '''
         On double click, move ant
         '''
-	timeDiff = time.time()-self.clickTime
+        timeDiff = time.time()-self.clickTime
 	self.clickTime = time.time()
 	if( button == 1 and timeDiff<=0.25 ):
-	    self.move(x - self.sprite.width() /2, y - self.sprite.height() /2)
+	    self.move(x/24, y/24)

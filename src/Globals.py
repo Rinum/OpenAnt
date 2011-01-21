@@ -23,7 +23,12 @@
 #general
 vbos = False
 glwidget = None
+player = None
+overMap= None
 datadir = "../data/"
+pixelsize = 25
+mapheight = 100 
+mapwidth = 100 
 
 #gui
 #nothing here yet

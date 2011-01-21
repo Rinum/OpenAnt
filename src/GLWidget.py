@@ -27,7 +27,7 @@ from OpenGL.GL.ARB.vertex_buffer_object import *
 from OpenGL.arrays import ArrayDatatype as ADT
 
 #Only set these when creating non-development code
-#OpenGL.ERROR_CHECKING = False
+OpenGL.ERROR_CHECKING = False
 #OpenGL.ERROR_LOGGING = False
 
 from PyQt4.QtCore import *
@@ -38,9 +38,11 @@ import Globals
 
 mod = False
 try:
+    print "Loading GLMod"
     import glmod
     mod = True
 except:
+    print "Failed!"
     pass
 
 from Image import *
