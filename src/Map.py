@@ -19,6 +19,7 @@ import os
 
 from GLWidget import *
 import Globals
+import numpy
 
 from random import *
 
@@ -35,7 +36,6 @@ class Map():
     Class for generating maps
     '''
     def __init__(self):
-        self.tiles = [[None]*40 for _ in range(40)]
         #Ground tiles
         self.groundTilesPath = Globals.datadir+'images/ground/'
         self.groundTiles = []
@@ -53,6 +53,8 @@ class Map():
         dirList=os.listdir(self.foliageTilesPath)
         for fname in dirList:
             self.foliageTiles.append(fname)
+
+        self.tiles = numpy.empty([40, 40], dtype=object)
     
     def generateMap(self):
         for x in range(40):
