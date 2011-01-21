@@ -17,7 +17,6 @@
 
 import os
 
-from GLWidget import *
 import Globals
 import numpy
 from View import View
@@ -41,37 +40,37 @@ class Map():
     '''
     def __init__(self):
         #Ground tiles
-        self.groundTilesPath = Globals.datadir+'images/ground/'
+        self.groundTilesPath = Globals.datadir + 'images/ground/'
         self.groundTiles = []
 
         #Foliage tiles
-        self.foliageTilesPath = Globals.datadir+'images/foliage/'
+        self.foliageTilesPath = Globals.datadir + 'images/foliage/'
         self.foliageTiles = []
 
         #Populate list of ground tiles
-        dirList=os.listdir(self.groundTilesPath)
+        dirList = os.listdir(self.groundTilesPath)
         for fname in dirList:
             self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
 
         #Populate list of foliage tiles
-        dirList=os.listdir(self.foliageTilesPath)
+        dirList = os.listdir(self.foliageTilesPath)
         for fname in dirList:
             self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
 
-	self.dirtTile = Tile(Globals.datadir+'images/tile-dirt.png', True)
+	    self.dirtTile = Tile(Globals.datadir + 'images/tile-dirt.png', True)
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight, Globals.mapdepth], dtype=object)
     
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
-                if(randint(0,10)>8):
+                if randint(0,10) > 8:
                     self.tiles[x][y][0] = choice(self.foliageTiles)
-		else:
+                else:
                     self.tiles[x][y][0] = choice(self.groundTiles)
                 for z in range(1, Globals.mapdepth):
                     self.tiles[x][y][z] = self.dirtTile
-        #self.groundView = View(self.tiles[:,:,0]) 
+        #self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
         # Uncomment the next line (and comment the above line) for underground view.
-        self.undergroundView = View(self.tiles[:,0,:])
+        self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
 

@@ -149,7 +149,7 @@ class GLWidget(QGLWidget):
                 initok = True
                 print "using gl module with VBO support"
 
-        if mod and initok:
+        if mod and initok and False:
             if glInitVertexBufferObjectARB() and bool(glBindBufferARB):
                 Globals.vbos = True
                 print "VBO support initialised succesfully"
