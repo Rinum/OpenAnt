@@ -36,7 +36,6 @@ class Map():
     Class for generating maps
     '''
     def __init__(self):
-        self.tiles = [[None]*40 for _ in range(40)]
         #Ground tiles
         self.groundTilesPath = Globals.datadir+'images/ground/'
         self.groundTiles = []
@@ -55,7 +54,7 @@ class Map():
         for fname in dirList:
             self.foliageTiles.append(fname)
 
-        self.array = numpy.empty([640/24, 480/24], dtype=object)
+        self.tiles = numpy.empty([40, 40], dtype=object)
     
     def generateMap(self):
         for x in range(40):
