@@ -28,7 +28,7 @@ from OpenGL.arrays import ArrayDatatype as ADT
 
 #Only set these when creating non-development code
 OpenGL.ERROR_CHECKING = False
-#OpenGL.ERROR_LOGGING = False
+OpenGL.ERROR_LOGGING = False
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -116,7 +116,7 @@ class GLWidget(QGLWidget):
         glOrtho(0, w, h, 0, -1, 1)
         glMatrixMode(GL_MODELVIEW)
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
-	self.w = w
+        self.w = w
         self.h = h
 
     def initializeGL(self):
@@ -149,7 +149,7 @@ class GLWidget(QGLWidget):
                 initok = True
                 print "using gl module with VBO support"
 
-        if mod and initok and False:
+        if mod and initok:
             if glInitVertexBufferObjectARB() and bool(glBindBufferARB):
                 Globals.vbos = True
                 print "VBO support initialised succesfully"
@@ -169,12 +169,12 @@ class GLWidget(QGLWidget):
         if textureRect[2] == -1:
             if qimg == None:
                 qimg = QImage(qimagepath)
-            textureRect[2] = qimg.width()
+            textureRect[2] = qimg.width() - 1
 
         if textureRect[3] == -1:
             if qimg == None:
                 qimg = QImage(qimagepath)
-            textureRect[3] = qimg.height()
+            textureRect[3] = qimg.height() - 1
 
         if drawRect[2] == -1:
             if qimg == None:
@@ -241,6 +241,32 @@ class GLWidget(QGLWidget):
 
         return image
 
+    def reserveVBOSize(self, size):
+        '''
+        Does not work yet. If this function is called, it makes glGenTextures fail
+        '''
+        return
+
+        if Globals.vbos and size > self.VBOBuffer:
+            self.VBOBuffer = size
+            vertByteCount = ADT.arrayByteCount(numpy.zeros((8, 2), 'f'))
+
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, self.VBOBuffer*vertByteCount, None, GL_STATIC_DRAW_ARB)
+
+            self.offset = 0
+
+            for layer in self.layers:
+                for img in self.images[layer]:
+                    img.offset = int(float(self.offset)/vertByteCount*4)
+                    VBOData = img.getVBOData()
+
+                    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, self.offset, vertByteCount, VBOData)
+                    self.offset += vertByteCount
+
+            glBindBuffer(GL_ARRAY_BUFFER_ARB, 0)
+
+            self.calculateVBOList()
+
     def fillBuffers(self, image = None):
         '''
         ALSO FILL IN LATER...PLOX
@@ -274,6 +300,8 @@ class GLWidget(QGLWidget):
 
             glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, self.offset, vertByteCount, VBOData)
             self.offset += vertByteCount
+
+        glBindBuffer(GL_ARRAY_BUFFER_ARB, 0)
 
     def deleteImage(self, image):
         '''
@@ -343,6 +371,18 @@ class GLWidget(QGLWidget):
         vbolist could possibly be a multi-layered tuple, one tuple per layer.
         So that it doesn't have to be recalculated every time one single image is changed.
         '''
+        if len(self.layers) > 0 and len(self.vbolist) > 2 and image != None:
+            if image.layer == self.layers[0]:
+                self.vbolist.insert(2, image.offset) #note the reversed order here
+                self.vbolist.insert(2, image.textureId)
+                glmod.setVBO(tuple(self.vbolist))
+                return
+            elif image.layer == self.layers[-1]:
+                self.vbolist.append(image.textureId)
+                self.vbolist.append(image.offset)
+                glmod.setVBO(tuple(self.vbolist))
+                return
+
         self.vbolist = [self.VBO, ADT.arrayByteCount(numpy.zeros((2, 2), 'f'))]
         for layer in self.layers:
             for img in self.images[layer]:
@@ -350,7 +390,9 @@ class GLWidget(QGLWidget):
                     continue
                 self.vbolist.append(img.textureId)
                 self.vbolist.append(img.offset)
-        glmod.setVBO(tuple(self.vbolist))
+
+        if len(self.vbolist) > 2:
+            glmod.setVBO(tuple(self.vbolist))
 
     def hideImage(self, image, hide):
         '''

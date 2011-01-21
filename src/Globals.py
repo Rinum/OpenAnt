@@ -28,7 +28,7 @@ overMap= None
 datadir = "../data/"
 pixelsize = 25
 mapheight = 100
-mapwidth = 100 
+mapwidth = 100
 mapdepth = 50
 
 #gui

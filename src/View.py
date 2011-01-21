@@ -28,6 +28,8 @@ class View():
     def __init__(self, mapSlice):
         self.tiles = numpy.empty_like(mapSlice)
 
+        Globals.glwidget.reserveVBOSize(len(mapSlice)*len(mapSlice[0]))
+
         for x in range(len(mapSlice)):
             for y in range(len(mapSlice[0])):
                 Globals.glwidget.createImage(mapSlice[x,y].image, 0, [1, 1, -1, -1], [x*24, y*24, -1, -1])
