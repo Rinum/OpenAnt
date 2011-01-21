@@ -87,7 +87,7 @@ class GLWidget(QGLWidget):
         '''
         Drawing routine
         '''
-        
+
         glClear(GL_COLOR_BUFFER_BIT)
 
         glPushMatrix()
@@ -296,29 +296,26 @@ class GLWidget(QGLWidget):
         if image.hidden:
             return
 
-        if mod:
-            x, y, w, h = image.textureRect
-            dx, dy, dw, dh = image.drawRect
+        x, y, w, h = image.textureRect
+        dx, dy, dw, dh = image.drawRect
 
+        cx, cy = self.camera
+
+        # Culling
+        if (dx * self.zoom > self.w - cx) or (dy * self.zoom > self.h - cy) or ((dx + dw) * self.zoom < 0-cx) or ((dy + dh) * self.zoom < 0-cy):
+            return
+
+        if mod:
             glmod.drawTexture(image.textureId, dx, dy, dw, dh, x, y, w, h)
         else:
-            self.drawTexture(image.textureId, image.textureRect, image.drawRect)
+            self.drawTexture(image.textureId, dx, dy, dw, dh, x, y, w, h)
 
-    def drawTexture(self, texture, textureRect, drawRect):
+    def drawTexture(self, texture, dx, dy, dw, dh, x, y, w, h):
         '''
         texture is an int
         textureRect is a list of size 4, determines which square to take from the texture
         drawRect is a list of size 4, is used to determine the drawing size
         '''
-
-        x, y, w, h = textureRect
-        dx, dy, dw, dh = drawRect
-
-	cx, cy = self.camera
-
-        # Culling
-	if (dx > self.w - cx) or (dy > self.h - cy) or (dx + dw < 0-cx) or (dy + dh < 0-cy):
-            return
 
         glBindTexture(self.texext, texture)
 
