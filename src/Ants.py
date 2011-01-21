@@ -36,11 +36,20 @@ class Ants():
         self.ypos = ypos
         self.sprite = None
         self.clickTime = 0#waiting for double click
+        self.direction = "self.S"
         Globals.glwidget.mousePress.connect(self.getCoords)
 
     def drawAnt(self):
         #create ant
-        self.sprite = Globals.glwidget.createImage(Globals.datadir+'images/yellowAnt.png', 2, [1, 1, -1, -1], [self.xpos, self.ypos, -1, -1])
+        self.N = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/N.png', 2, [1, 1, -1, -1], [-100, -100, -1, -1])
+        self.S = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/S.png', 2, [1, 1, -1, -1], [self.xpos, self.ypos, -1, -1])
+        self.E = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/E.png', 2, [1, 1, -1, -1], [-100, -100, -1, -1])
+        self.W = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/W.png', 2, [1, 1, -1, -1], [-100, -100, -1, -1])
+        self.NE = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/NE.png', 2, [1, 1, -1, -1], [-100, -100, -1, -1])
+        self.NW = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/NW.png', 2, [1, 1, -1, -1], [-100, -100, -1, -1])
+        self.SE = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/SE.png', 2, [1, 1, -1, -1], [-100, -100, -1, -1])
+        self.SW = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellow/SW.png', 2, [1, 1, -1, -1], [-100, -100, -1, -1])
+        self.sprite = self.S
 
     def move(self, x, y):
     	try: # We try and cancel any previous movements.
@@ -49,13 +58,22 @@ class Ants():
 	    pass
 	# TODO: Implement a path finding algrothem like A*
         if self.xpos < x:
-            self.xpos += 1 
+            self.xpos += 1
+            newDirection = "E"
         elif self.xpos > x:
-            self.xpos -= 1 
+            self.xpos -= 1
+            newDirection = "W"
         if self.ypos < y:
-            self.ypos += 1 
+            self.ypos += 1
+            newDirection = "S"+newDirection
         elif self.ypos > y:
             self.ypos -= 1
+            newDirection = "N"+newDirection
+        newDirection = "self."+newDirection
+        if(self.direction != newDirection):
+            self.sprite.setDrawRect([-100, -100, 24, 24]) # Update sprite location.
+            self.sprite = eval(newDirection)
+            self.Direction = newDirection
 	self.sprite.setDrawRect([self.xpos, self.ypos, 24, 24]) # Update sprite location.
 	if (self.xpos != x) or (self.ypos != y): # If we havn't reached our destination, Schedule another call to move.
 	    self.t = Timer(0.03, self.move, (x, y))
