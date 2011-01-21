@@ -20,6 +20,7 @@ import os
 from GLWidget import *
 import Globals
 import numpy
+from View import View
 
 from random import *
 
@@ -30,6 +31,9 @@ class Tile():
     def __init__(self, image, passable):
         self.image = image
         self.passable = passable
+
+    def __repr__(self):
+        return self.image
 
 class Map():
     '''
@@ -47,18 +51,27 @@ class Map():
         #Populate list of ground tiles
         dirList=os.listdir(self.groundTilesPath)
         for fname in dirList:
-            self.groundTiles.append(fname)
+            self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
 
         #Populate list of foliage tiles
         dirList=os.listdir(self.foliageTilesPath)
         for fname in dirList:
-            self.foliageTiles.append(fname)
+            self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
 
-        self.tiles = numpy.empty([40, 40], dtype=object)
+	self.dirtTile = Tile(Globals.datadir+'images/tile-dirt.png', True)
+
+        self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight, Globals.mapdepth], dtype=object)
     
     def generateMap(self):
-        for x in range(40):
-            for y in range(40):
+        for x in range(Globals.mapwidth):
+            for y in range(Globals.mapheight):
                 if(randint(0,10)>8):
-                    self.tiles[x][y] = Tile(Globals.glwidget.createImage(self.foliageTilesPath + self.foliageTiles[randint(0, len(self.foliageTiles)-1)], 1, [1, 1, -1, -1], [x*24, y*24, -1, -1]), 1)
-                self.tiles[x][y] = Tile(Globals.glwidget.createImage(self.groundTilesPath + self.groundTiles[randint(0, len(self.groundTiles)-1)], 0, [1, 1, -1, -1], [x*24, y*24, -1, -1]), 1)
+                    self.tiles[x][y][0] = choice(self.foliageTiles)
+		else:
+                    self.tiles[x][y][0] = choice(self.groundTiles)
+                for z in range(1, Globals.mapdepth):
+                    self.tiles[x][y][z] = self.dirtTile
+        #self.groundView = View(self.tiles[:,:,0]) 
+        # Uncomment the next line (and comment the above line) for underground view.
+        self.undergroundView = View(self.tiles[:,0,:])
+
