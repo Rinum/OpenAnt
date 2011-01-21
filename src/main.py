@@ -69,9 +69,9 @@ class MainWindow(QMainWindow):
             Globals.muspanel = MusPanel(self)
 
         #draw map
-            self.map.generateMap()
+        self.map.generateMap()
         #draw ant
-            self.ant.drawAnt()
+        self.ant.drawAnt()
 
     def drawTimerTimeout(self):
         Globals.glwidget.updateGL()
