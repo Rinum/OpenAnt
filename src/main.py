@@ -28,7 +28,7 @@ from PyQt4.QtGui import *
 
 from GLWidget import *
 from Map import *
-from Ant import *
+from Ants import *
 import Globals
 
 if Globals.musicOn:
@@ -62,7 +62,7 @@ class MainWindow(QMainWindow):
         self.drawTimer.start(13)
 
         self.map=Map()#map class
-        self.ant=Ants(320,240)#ants class
+        self.ant=Ants(8,6)#ants class
         
     def start(self):
         if Globals.musicOn:

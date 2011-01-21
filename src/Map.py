@@ -22,11 +22,20 @@ import Globals
 
 from random import *
 
+class Tile():
+    '''
+    Class to represent a tile
+    '''
+    def __init__(self, image, passable):
+        self.image = image
+        self.passable = passable
+
 class Map():
     '''
     Class for generating maps
     '''
     def __init__(self):
+        self.tiles = [[None]*40 for _ in range(40)]
         #Ground tiles
         self.groundTilesPath = Globals.datadir+'images/ground/'
         self.groundTiles = []
@@ -46,8 +55,8 @@ class Map():
             self.foliageTiles.append(fname)
     
     def generateMap(self):
-        for x in range(640/24):
-            for y in range(480/24):
+        for x in range(40):
+            for y in range(40):
                 if(randint(0,10)>8):
-                    Globals.glwidget.createImage(self.foliageTilesPath + self.foliageTiles[randint(0, len(self.foliageTiles)-1)], 1, [1, 1, -1, -1], [x*24, y*24, -1, -1])
-                Globals.glwidget.createImage(self.groundTilesPath + self.groundTiles[randint(0, len(self.groundTiles)-1)], 0, [1, 1, -1, -1], [x*24, y*24, -1, -1])
+                    self.tiles[x][y] = Tile(Globals.glwidget.createImage(self.foliageTilesPath + self.foliageTiles[randint(0, len(self.foliageTiles)-1)], 1, [1, 1, -1, -1], [x*24, y*24, -1, -1]), 1)
+                self.tiles[x][y] = Tile(Globals.glwidget.createImage(self.groundTilesPath + self.groundTiles[randint(0, len(self.groundTiles)-1)], 0, [1, 1, -1, -1], [x*24, y*24, -1, -1]), 1)
