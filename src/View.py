@@ -14,32 +14,24 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Open Ant.  If not, see <http://www.gnu.org/licenses/>.
-
 #
-# This is where all the globals of Open Ant are stored
 #
-# By Oipo (kingoipo@gmail.com)
+# Transforms a slice of the map (along any axis) and generates a
+# viewable repersentation
+#
+# By phire (phire@gmail.com)
 
-#general
-vbos = False
-glwidget = None
-player = None
-overMap= None
-datadir = "../data/"
-pixelsize = 25
-mapheight = 100
-mapwidth = 100 
-mapdepth = 50
+import Globals
+import numpy
 
-#gui
-#nothing here yet
+class View():
+    def __init__(self, mapSlice):
+        self.tiles = numpy.empty_like(mapSlice)
 
-#music
-mediaobject = None
+        for x in range(len(mapSlice)):
+            for y in range(len(mapSlice[0])):
+                Globals.glwidget.createImage(mapSlice[x,y].image, 0, [1, 1, -1, -1], [x*24, y*24, -1, -1])
 
-try:
-    import PyQt4.phonon
-    musicOn = True
-except ImportError as e:
-    musicOn = False
-    
+    def delete(self):
+	# Delete all images
+        pass # not implemented yet.
