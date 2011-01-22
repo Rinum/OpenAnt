@@ -185,6 +185,7 @@ class GLWidget(QGLWidget):
             if qimg == None:
                 qimg = QImage(qimagepath)
             drawRect[3] = qimg.height()
+	qimg = QImage(qimagepath)
 
         image = Image(qimagepath, qimg, textureRect, drawRect, layer, hidden, dynamicity)
 

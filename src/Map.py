@@ -70,7 +70,7 @@ class Map():
                     self.tiles[x][y][0] = choice(self.groundTiles)
                 for z in range(1, Globals.mapdepth):
                     self.tiles[x][y][z] = self.dirtTile
-        #self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
+        self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
         # Uncomment the next line (and comment the above line) for underground view.
-        self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
+        #self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
 

@@ -77,6 +77,15 @@ class Image(object):
             glBindBuffer(GL_ARRAY_BUFFER_ARB, self.VBO)
             glBufferSubData(GL_ARRAY_BUFFER_ARB, int(self.offset*vertByteCount/4), vertByteCount, VBOData)
 
+    def setTextureRect(self, textureRect):
+        self.textureRect = textureRect
+#        if Globals.glwidget.texext == GL_TEXTURE_2D:
+#            x = float(textureRect[0])/float(qimg.width())
+#            y = float(textureRect[1])/float(qimg.height())
+#            w = float(textureRect[2])/float(qimg.width())
+#            h = float(textureRect[3])/float(qimg.height())
+#            self.textureRect = [x, y, w, h]
+
     def getVBOData(self):
         x, y, w, h = self.textureRect
         dx, dy, dw, dh = self.drawRect

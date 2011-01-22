@@ -71,7 +71,7 @@ class MainWindow(QMainWindow):
         #draw map
         self.map.generateMap()
         #draw ant
-        self.ant.drawAnt()
+        #self.ant.drawAnt()
 
     def drawTimerTimeout(self):
         Globals.glwidget.updateGL()
