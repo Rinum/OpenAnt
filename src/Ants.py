@@ -77,7 +77,7 @@ class Ants():
 
     def getCoords(self, button, x, y):
         '''
-        On double click, move ant
+        On click, move ant
         '''
 	if button == 1:
             self.move(x/24, y/24)

@@ -63,6 +63,7 @@ class GLWidget(QGLWidget):
     '''
 
     mousePress = pyqtSignal(int, int, int) #button, x, y
+    mouseMove = pyqtSignal(int, int) #x, y
     
     def __init__(self, parent):
         QGLWidget.__init__(self, parent)
@@ -81,6 +82,8 @@ class GLWidget(QGLWidget):
         self.vbolist = []
         self.qimages = {}
         self.texext = GL_TEXTURE_RECTANGLE_ARB
+        
+        self.setMouseTracking(True) #Tracks mouse location (disables map drag)
 
     #GL functions
     def paintGL(self):
@@ -396,10 +399,9 @@ class GLWidget(QGLWidget):
             self.calculateVBOList()
 
     def mouseMoveEvent(self, mouse):
-        self.camera[0] += mouse.pos().x() - self.lastMousePos[0]
-        self.camera[1] += mouse.pos().y() - self.lastMousePos[1]
         self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
-
+        self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
+        
         mouse.accept()
 
     def mousePressEvent(self, mouse):

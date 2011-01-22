@@ -22,6 +22,7 @@ import numpy
 from View import View
 
 from random import *
+from threading import Timer
 
 class Tile():
     '''
@@ -60,7 +61,10 @@ class Map():
 	    self.dirtTile = Tile(Globals.datadir + 'images/tile-dirt.png', True)
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight, Globals.mapdepth], dtype=object)
-    
+
+        #Waiting for mouse move signal
+        Globals.glwidget.mouseMove.connect(self.moveCamera)
+        
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
@@ -74,3 +78,29 @@ class Map():
         # Uncomment the next line (and comment the above line) for underground view.
         #self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
 
+    def moveCamera(self,x,y):
+        try: # We try and cancel any previous camera movements.
+	    self.t.cancel()
+	except:
+	    pass
+	
+        w = Globals.glwidget.w #viewport width
+        h = Globals.glwidget.h #viewport height
+
+        mousePosX = x
+        mousePosY = y
+
+        if x<=(0.1*w):
+            mousePosX += 1
+        if x>=(w - 0.1*w):
+            mousePosX -= 1
+        if y<=(0.1*h):
+            mousePosY += 1
+        if y>=(h - 0.1*h):
+            mousePosY -= 1
+        Globals.glwidget.camera[0] += mousePosX - x
+        Globals.glwidget.camera[1] += mousePosY - y
+
+        if ((x<=(0.1*w)) or (x>=(w - 0.1*w)) or (y<=(0.1*h)) or (y>=(h - 0.1*h))):
+            self.t = Timer(0.01, self.moveCamera, (x, y))
+            self.t.start()
