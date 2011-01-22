@@ -89,18 +89,23 @@ class Map():
 
         mousePosX = x
         mousePosY = y
+        loop = False
 
-        if x<=(0.1*w):
+        if x<=(0.1*w) and Globals.glwidget.camera[0]<=0:
             mousePosX += 1
-        if x>=(w - 0.1*w):
+            loop = True
+        if x>=(w - 0.1*w) and Globals.glwidget.camera[0]>=Globals.mapwidth*-24 +w:
             mousePosX -= 1
-        if y<=(0.1*h):
+            loop = True
+        if y<=(0.1*h) and Globals.glwidget.camera[1]<=0:
             mousePosY += 1
-        if y>=(h - 0.1*h):
+            loop = True
+        if y>=(h - 0.1*h) and Globals.glwidget.camera[1]>=Globals.mapheight*-24 +h:
             mousePosY -= 1
+            loop = True
         Globals.glwidget.camera[0] += mousePosX - x
         Globals.glwidget.camera[1] += mousePosY - y
 
-        if ((x<=(0.1*w)) or (x>=(w - 0.1*w)) or (y<=(0.1*h)) or (y>=(h - 0.1*h))):
+        if loop == True:
             self.t = Timer(0.01, self.moveCamera, (x, y))
             self.t.start()
