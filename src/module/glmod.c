@@ -59,7 +59,7 @@ static PyObject * glmod_drawTexture(PyObject *self, PyObject* args)
 
 static PyObject * glmod_drawVBO(PyObject *self, PyObject* args)
 {
-    int i;
+    int i, lastid = -1;
 
     glBindBuffer(GL_ARRAY_BUFFER_ARB, VBO);
     glTexCoordPointer(2, GL_FLOAT, stride, 0);
@@ -70,7 +70,11 @@ static PyObject * glmod_drawVBO(PyObject *self, PyObject* args)
 
     for(i = 0; i < arrSize; i++)
     {
-        glBindTexture(extension, texid[i]);
+        if(lastid != texid[i])
+        {
+            glBindTexture(extension, texid[i]);
+            lastid = texid[i];
+        }
 
         glDrawArrays(GL_QUADS, offsets[i], 4);
     }

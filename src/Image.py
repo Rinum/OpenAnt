@@ -46,10 +46,10 @@ class Image(object):
         self.qimg = qimg
 
         if Globals.glwidget.texext == GL_TEXTURE_2D:
-            x = float(textureRect[0])/float(qimg.width())
-            y = float(textureRect[1])/float(qimg.height())
-            w = float(textureRect[2])/float(qimg.width())
-            h = float(textureRect[3])/float(qimg.height())
+            x = float(textureRect[0])/float(qimg.width()-1)
+            y = float(textureRect[1])/float(qimg.height()-1)
+            w = float(textureRect[2])/float(qimg.width()-1)
+            h = float(textureRect[3])/float(qimg.height()-1)
             self.textureRect = [x, y, w, h]
 
     @property
