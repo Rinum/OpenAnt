@@ -43,6 +43,7 @@ class Image(object):
         self.offset = None
         self.VBO = None
         self._hidden = hidden
+        self.qimg = qimg
 
         if Globals.glwidget.texext == GL_TEXTURE_2D:
             x = float(textureRect[0])/float(qimg.width())
@@ -79,12 +80,12 @@ class Image(object):
 
     def setTextureRect(self, textureRect):
         self.textureRect = textureRect
-#        if Globals.glwidget.texext == GL_TEXTURE_2D:
-#            x = float(textureRect[0])/float(qimg.width())
-#            y = float(textureRect[1])/float(qimg.height())
-#            w = float(textureRect[2])/float(qimg.width())
-#            h = float(textureRect[3])/float(qimg.height())
-#            self.textureRect = [x, y, w, h]
+        if Globals.glwidget.texext == GL_TEXTURE_2D:
+            x = float(textureRect[0])/float(self.qimg.width())
+            y = float(textureRect[1])/float(self.qimg.height())
+            w = float(textureRect[2])/float(self.qimg.width())
+            h = float(textureRect[3])/float(self.qimg.height())
+            self.textureRect = [x, y, w, h]
 
     def getVBOData(self):
         x, y, w, h = self.textureRect

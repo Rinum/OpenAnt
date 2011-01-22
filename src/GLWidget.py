@@ -163,29 +163,21 @@ class GLWidget(QGLWidget):
         FILL IN LATER PLOX
         '''
 
-        qimg = None
+        qimg = QImage(qimagepath)
+        
         layer = int(layer)
 
         if textureRect[2] == -1:
-            if qimg == None:
-                qimg = QImage(qimagepath)
             textureRect[2] = qimg.width() - 1
 
         if textureRect[3] == -1:
-            if qimg == None:
-                qimg = QImage(qimagepath)
             textureRect[3] = qimg.height() - 1
 
         if drawRect[2] == -1:
-            if qimg == None:
-                qimg = QImage(qimagepath)
             drawRect[2] = qimg.width()
 
         if drawRect[3] == -1:
-            if qimg == None:
-                qimg = QImage(qimagepath)
             drawRect[3] = qimg.height()
-	qimg = QImage(qimagepath)
 
         image = Image(qimagepath, qimg, textureRect, drawRect, layer, hidden, dynamicity)
 

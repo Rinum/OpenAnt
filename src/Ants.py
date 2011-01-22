@@ -42,9 +42,9 @@ class Ants():
         self.NE = [24, 0, 24, 24]
         self.SW = [48, 0, 24, 24]
         self.SE = [72, 0, 24, 24]
-        self.sprite = Globals.glwidget.createImage(Globals.datadir+'images/ants/yellowant.png', 2, [24, 24, 24, 24], [self.xpos, self.ypos, 24, 24])
+        self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [24, 24, 24, 24], [self.xpos, self.ypos, 24, 24])
         self.sprite.setTextureRect(self.S)
-        self.clickTime = 0#waiting for double click
+        self.clickTime = 0 #waiting for double click
         self.direction = self.S
         Globals.glwidget.mousePress.connect(self.getCoords)
 
@@ -63,12 +63,12 @@ class Ants():
             newDirection = "W"
         if self.ypos/24 < y:
             self.ypos += 1
-            newDirection = "S"+newDirection
+            newDirection = "S" + newDirection
         elif self.ypos/24 > y:
             self.ypos -= 1
-            newDirection = "N"+newDirection
+            newDirection = "N" + newDirection
         if(newDirection != ""):
-	    newDirection = "self."+newDirection
+	    newDirection = "self." + newDirection
             self.direction = eval(newDirection)
 	self.sprite.setTextureRect(self.direction) # Update sprite location.
         self.sprite.setDrawRect([self.xpos, self.ypos, 24, 24]) # Update sprite location.
@@ -82,5 +82,5 @@ class Ants():
         '''
 	timeDiff = time.time()-self.clickTime
 	self.clickTime = time.time()
-	if( button == 1 and timeDiff<=0.25 ):
+	if button == 1 and timeDiff<=0.25:
             self.move(x/24, y/24)
