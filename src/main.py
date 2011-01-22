@@ -62,7 +62,6 @@ class MainWindow(QMainWindow):
         self.drawTimer.start(13)
 
         self.map = Map() #map class
-        self.ant = Ants(8, 6) #ants class
         
     def start(self):
         if Globals.musicOn:
@@ -71,7 +70,7 @@ class MainWindow(QMainWindow):
         #draw map
         self.map.generateMap()
         #draw ant
-        #self.ant.drawAnt()
+        self.ant = Ants(8, 6) #ants class
 
     def drawTimerTimeout(self):
         Globals.glwidget.updateGL()
