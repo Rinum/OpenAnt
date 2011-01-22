@@ -44,7 +44,6 @@ class Ants():
         self.SE = [72, 0, 24, 24]
         self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [24, 24, 24, 24], [self.xpos, self.ypos, 24, 24])
         self.sprite.setTextureRect(self.S)
-        self.clickTime = 0 #waiting for double click
         self.direction = self.S
         Globals.glwidget.mousePress.connect(self.getCoords)
 
@@ -80,7 +79,5 @@ class Ants():
         '''
         On double click, move ant
         '''
-	timeDiff = time.time()-self.clickTime
-	self.clickTime = time.time()
-	if button == 1 and timeDiff<=0.25:
+	if button == 1:
             self.move(x/24, y/24)
