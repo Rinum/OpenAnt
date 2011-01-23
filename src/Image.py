@@ -51,6 +51,10 @@ class Image(object):
             h = float(textureRect[3])/float(qimg.height()-1)
             self.textureRect = [x, y, w, h]
 
+    def __del__(self):
+        if Globals != None:
+            Globals.glwidget.deleteImage(self)
+
     @property
     def hidden(self):
         return self._hidden
