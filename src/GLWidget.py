@@ -169,6 +169,17 @@ class GLWidget(QGLWidget):
         qimg = QImage(qimagepath)
         
         layer = int(layer)
+        texture = None
+        found = False
+
+        if qimagepath in self.qimages:
+            qimg = self.qimages[qimagepath][0]
+            if self.qimages[qimagepath][2] > 0:
+                texture = self.qimages[qimagepath][1]
+                found = True
+        else:
+            qimg = QImage(qimagepath)
+            print "created", qimagepath
 
         if textureRect[2] == -1:
             textureRect[2] = qimg.width() - 1
@@ -184,18 +195,7 @@ class GLWidget(QGLWidget):
 
         image = Image(qimagepath, qimg, textureRect, drawRect, layer, hidden, dynamicity)
 
-        texture = None
-        found = False
-
-        for qimgpath in self.qimages:
-            if qimgpath == qimagepath and self.qimages[qimgpath][1] > 0:
-                texture = self.qimages[qimgpath][0]
-                found = True
-
         if found == False:
-            if qimg == None:
-                qimg = QImage(qimagepath)
-                
             if self.texext == GL_TEXTURE_2D:
                 w = nextPowerOfTwo(qimg.width())
                 h = nextPowerOfTwo(qimg.height())
@@ -213,9 +213,9 @@ class GLWidget(QGLWidget):
 
             glTexImage2D(self.texext, 0, GL_RGBA, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 
-            self.qimages[qimagepath] = [texture, 1] #texture, reference count
+            self.qimages[qimagepath] = [qimg, texture, 1] #texture, reference count
         else:
-            self.qimages[qimagepath][1] += 1
+            self.qimages[qimagepath][2] += 1
 
         image.textureId = texture
 
@@ -230,7 +230,7 @@ class GLWidget(QGLWidget):
             image.VBO = self.VBO
 
             self.fillBuffers(image)
-            if len(self.qimages[qimagepath]) == 2:
+            if len(self.qimages[qimagepath]) == 3:
                 self.qimages[qimagepath].append(image.offset)
 
             self.calculateVBOList(image)
@@ -301,12 +301,12 @@ class GLWidget(QGLWidget):
 
     def deleteImage(self, image):
         '''
-        INACCURATE. IGNORE THIS COMMENT.
+        Decreases the reference count of the texture by one, and deletes it if nothing is using it anymore
         '''
 
-        self.qimages[image.imagepath][1] -= 1
+        self.qimages[image.imagepath][2] -= 1
 
-        if self.qimages[image.imagepath][1] <= 0:
+        if self.qimages[image.imagepath][2] <= 0:
             glDeleteTextures(image.textureId)
 
         self.images[image.layer].remove(image)
