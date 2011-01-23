@@ -26,10 +26,10 @@ glwidget = None
 player = None
 overMap= None
 datadir = "../data/"
-pixelsize = 25
-mapheight = 100
-mapwidth = 100 
-mapdepth = 50
+pixelsize = 24
+mapheight = 64
+mapwidth = 128
+mapdepth = 64
 
 #gui
 #nothing here yet
