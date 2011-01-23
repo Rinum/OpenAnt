@@ -20,6 +20,7 @@ import os
 import Globals
 import numpy
 from View import View
+from Ants import *
 
 from random import *
 from threading import Timer
@@ -40,6 +41,8 @@ class Map():
     Class for generating maps
     '''
     def __init__(self):
+        self.ant = Ants(8, 6) #ants class
+        self.ant2 = Ants(0, 0)
         #Ground tiles
         self.groundTilesPath = Globals.datadir + 'images/ground/'
         self.groundTiles = []
@@ -64,6 +67,7 @@ class Map():
 
         #Waiting for mouse move signal
         Globals.glwidget.mouseMove.connect(self.moveCamera)
+        Globals.glwidget.mousePress.connect(self.getCoords)
         
     def generateMap(self):
         for x in range(Globals.mapwidth):
@@ -77,6 +81,17 @@ class Map():
         self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
         # Uncomment the next line (and comment the above line) for underground view.
         self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
+
+    def update(self):
+        if self.ant.pos != self.ant.newPos:
+            self.ant.move(self.ant.newPos[0]/24, self.ant.newPos[1]/24)
+        if self.ant2.moving == False:
+            self.ant2.newPos = [randint(0, Globals.mapwidth), randint(0, Globals.mapheight)]
+            self.ant2.moving = True
+        if self.ant2.pos[0]/24 != self.ant2.newPos[0]/24 or self.ant2.pos[1]/24 != self.ant2.newPos[1]/24:
+            self.ant2.move(self.ant2.newPos[0]/24, self.ant2.newPos[1]/24)
+        else:
+            self.ant2.moving = False
 
     def moveCamera(self,x,y,speed = 2):
         try: # We try and cancel any previous camera movements.
@@ -109,3 +124,10 @@ class Map():
         if loop == True:
             self.t = Timer(0.01, self.moveCamera, (x, y))
             self.t.start()
+
+    def getCoords(self, button, x, y):
+        '''
+        On click, move ant
+        '''
+	if button == 1:
+            self.ant.newPos = [x, y]
