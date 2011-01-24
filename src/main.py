@@ -28,7 +28,6 @@ from PyQt4.QtGui import *
 
 from GLWidget import *
 from Map import *
-from Ants import *
 import Globals
 
 if Globals.musicOn:
@@ -69,10 +68,9 @@ class MainWindow(QMainWindow):
 
         #draw map
         self.map.generateMap()
-        #draw ant
-        self.ant = Ants(8, 6) #ants class
 
     def drawTimerTimeout(self):
+        self.map.update()
         Globals.glwidget.updateGL()
  
 
