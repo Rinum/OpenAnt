@@ -70,9 +70,8 @@ class Ants():
 	    newDirection = "self." + newDirection
             self.direction = eval(newDirection)
 	    self.sprite.setTextureRect(self.direction) # Update sprite location.
-#        self.sprite.setDrawRect([self.pos[0], self.pos[1], 24, 24]) # Update sprite location.
-        if (self.pos[0] != x*24) or (self.pos[1] != y*24): # If we havn't reached our destination, Schedule another call to move.
-            self.t = Timer(0.03, self.move, (x, y))
-            self.t.start()
+        #if (self.pos[0] != x*24) or (self.pos[1] != y*24): # If we havn't reached our destination, Schedule another call to move.
+        #    self.t = Timer(0.03, self.move, (x, y))
+        #    self.t.start()
 	self.sprite.setDrawRect([self.pos[0], self.pos[1], 24, 24])
 

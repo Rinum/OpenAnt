@@ -80,15 +80,18 @@ class Map():
                     self.tiles[x][y][z] = self.dirtTile
         self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
         # Uncomment the next line (and comment the above line) for underground view.
-        self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
+        self.undergroundView = View(self.tiles[:,0,:], True) #tiles[every x, only 0 for y, every z]
+        self.view = self.groundView
 
     def update(self):
         if self.ant.pos != self.ant.newPos:
             self.ant.move(self.ant.newPos[0]/24, self.ant.newPos[1]/24)
+            self.view.setView(self.undergroundView)
         if self.ant2.moving == False:
-            self.ant2.newPos = [randint(0, Globals.mapwidth), randint(0, Globals.mapheight)]
+            self.ant2.newPos = [randint(0, Globals.mapwidth)*24, randint(0, Globals.mapheight)*24]
             self.ant2.moving = True
-        if self.ant2.pos[0]/24 != self.ant2.newPos[0]/24 or self.ant2.pos[1]/24 != self.ant2.newPos[1]/24:
+	    print self.ant2.newPos[0], self.ant2.newPos[1]
+        if self.ant2.pos != self.ant2.newPos:
             self.ant2.move(self.ant2.newPos[0]/24, self.ant2.newPos[1]/24)
         else:
             self.ant2.moving = False

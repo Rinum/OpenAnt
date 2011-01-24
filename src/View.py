@@ -25,14 +25,24 @@ import Globals
 import numpy
 
 class View():
-    def __init__(self, mapSlice):
+    def __init__(self, mapSlice, hidden=False):
         self.tiles = numpy.empty_like(mapSlice)
+        self.width = len(mapSlice)
+        self.height= len(mapSlice[0])
 
-        Globals.glwidget.reserveVBOSize(len(mapSlice)*len(mapSlice[0]))
+        Globals.glwidget.reserveVBOSize(self.width*self.height)
 
-        for x in range(len(mapSlice)):
-            for y in range(len(mapSlice[0])):
-                Globals.glwidget.createImage(mapSlice[x,y].image, 0, [1, 1, -1, -1], [x*24, y*24, -1, -1])
+        for x in range(self.width):
+            for y in range(self.height):
+               self.tiles[x][y] = Globals.glwidget.createImage(mapSlice[x,y].image, 0, [1, 1, -1, -1], [x*24, y*24, -1, -1], hidden)
+
+    def setView(self, newView):
+        if self == newView:
+            return
+        for x in range(self.width):
+            for y in range(self.height):
+                self.tiles[x][y]._hidden = True
+                newView.tiles[x][y]._hidden = False 
 
     def delete(self):
 	# Delete all images

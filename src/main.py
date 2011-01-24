@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
 
         self.drawTimer = QTimer()
         self.drawTimer.timeout.connect(self.drawTimerTimeout)
-        self.drawTimer.start(13)
+        self.drawTimer.start(0.2)
 
         self.map = Map() #map class
         
