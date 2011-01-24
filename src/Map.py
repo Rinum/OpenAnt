@@ -80,12 +80,9 @@ class Map():
                     self.tiles[x][y][z] = self.dirtTile
         self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
         # Uncomment the next line (and comment the above line) for underground view.
-<<<<<<< HEAD
         #self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
-=======
         self.undergroundView = View(self.tiles[:,0,:], True) #tiles[every x, only 0 for y, every z]
         self.view = self.groundView
->>>>>>> 5b7c4e02c6b14b86b682becf158e3abb312fda14
 
     def update(self):
         if self.ant.pos != self.ant.newPos:

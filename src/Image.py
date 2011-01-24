@@ -46,10 +46,10 @@ class Image(object):
         self.qimg = qimg
 
         if Globals.glwidget.texext == GL_TEXTURE_2D:
-            x = float(textureRect[0])/float(qimg.width()-10)
-            y = float(textureRect[1])/float(qimg.height()-10)
-            w = float(textureRect[2])/float(qimg.width()-10)
-            h = float(textureRect[3])/float(qimg.height()-10)
+            x = float(textureRect[0])/float(qimg.width()-1)
+            y = float(textureRect[1])/float(qimg.height()-1)
+            w = float(textureRect[2])/float(qimg.width()-1)
+            h = float(textureRect[3])/float(qimg.height()-1)
             self.textureRect = [x, y, w, h]
 
     def __del__(self):
