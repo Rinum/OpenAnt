@@ -204,7 +204,7 @@ class GLWidget(QGLWidget):
                 h = nextPowerOfTwo(qimg.height())
                 if w != qimg.width() or h != qimg.height():
                     qimg = qimg.scaled(w, h)
-                
+     
             img = self.convertToGLFormat(qimg)
             texture = glGenTextures(1)
             imgdata = img.bits().asstring(img.numBytes())

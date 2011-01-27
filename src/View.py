@@ -37,12 +37,8 @@ class View():
                self.tiles[x][y] = Globals.glwidget.createImage(mapSlice[x,y].image, 0, [1, 1, -1, -1], [x*24, y*24, -1, -1], hidden)
 
     def setView(self, newView):
-        if self == newView:
-            return
-        for x in range(self.width):
-            for y in range(self.height):
-                self.tiles[x][y]._hidden = True
-                newView.tiles[x][y]._hidden = False 
+        Globals.glwidget.camera[0] = -1 * (Globals.mapwidth * 24)
+        Globals.glwidget.camera[1] = 0
 
     def delete(self):
 	# Delete all images

@@ -42,7 +42,6 @@ class Map():
     '''
     def __init__(self):
         self.ant = Ants(8, 6) #ants class
-        self.ant2 = Ants(0, 0)
         #Ground tiles
         self.groundTilesPath = Globals.datadir + 'images/ground/'
         self.groundTiles = []
@@ -63,7 +62,7 @@ class Map():
 
 	    self.dirtTile = Tile(Globals.datadir + 'images/tile-dirt.png', True)
 
-        self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight, Globals.mapdepth], dtype=object)
+        self.tiles = numpy.empty([Globals.mapwidth*2, Globals.mapheight, Globals.mapdepth], dtype=object)
 
         #Waiting for mouse move signal
         Globals.glwidget.mouseMove.connect(self.moveCamera)
@@ -76,26 +75,16 @@ class Map():
                     self.tiles[x][y][0] = choice(self.foliageTiles)
                 else:
                     self.tiles[x][y][0] = choice(self.groundTiles)
-                for z in range(1, Globals.mapdepth):
-                    self.tiles[x][y][z] = self.dirtTile
+                self.tiles[(x+Globals.mapwidth)][y][0] = self.dirtTile
         self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
         # Uncomment the next line (and comment the above line) for underground view.
-        #self.undergroundView = View(self.tiles[:,0,:]) #tiles[every x, only 0 for y, every z]
-        self.undergroundView = View(self.tiles[:,0,:], True) #tiles[every x, only 0 for y, every z]
+        self.undergroundView = View(self.tiles[:,:,0]) #tiles[every x, only 0 for y, every z]
         self.view = self.groundView
 
     def update(self):
         if self.ant.pos != self.ant.newPos:
             self.ant.move(self.ant.newPos[0]/24, self.ant.newPos[1]/24)
             self.view.setView(self.undergroundView)
-        if self.ant2.moving == False:
-            self.ant2.newPos = [randint(0, Globals.mapwidth)*24, randint(0, Globals.mapheight)*24]
-            self.ant2.moving = True
-	    print self.ant2.newPos[0], self.ant2.newPos[1]
-        if self.ant2.pos != self.ant2.newPos:
-            self.ant2.move(self.ant2.newPos[0]/24, self.ant2.newPos[1]/24)
-        else:
-            self.ant2.moving = False
 
     def moveCamera(self,x,y,speed = 2):
         try: # We try and cancel any previous camera movements.
