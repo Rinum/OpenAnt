@@ -54,17 +54,17 @@ class Ants():
 	    pass
 	# TODO: Implement a path finding algrothem like A*
 	newDirection = ""
-        if self.pos[0] < x*24:
-            self.pos[0] += 3
+        if self.pos[0] < x*Globals.pixelsize:
+            self.pos[0] += 1
             newDirection = "E"
-        elif self.pos[0] > x*24:
-            self.pos[0] -= 3
+        elif self.pos[0] > x*Globals.pixelsize:
+            self.pos[0] -= 1
             newDirection = "W"
-        if self.pos[1] < y*24:
-            self.pos[1] += 3
+        if self.pos[1] < y*Globals.pixelsize:
+            self.pos[1] += 1
             newDirection = "S" + newDirection
-        elif self.pos[1] > y*24:
-            self.pos[1] -= 3
+        elif self.pos[1] > y*Globals.pixelsize:
+            self.pos[1] -= 1
             newDirection = "N" + newDirection
         if(newDirection != ""):
 	    newDirection = "self." + newDirection

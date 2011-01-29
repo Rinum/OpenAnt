@@ -55,14 +55,7 @@ class Map():
         for fname in dirList:
             self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
 
-        #Populate list of foliage tiles
-        dirList = os.listdir(self.foliageTilesPath)
-        for fname in dirList:
-            self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
-
-	    self.dirtTile = Tile(Globals.datadir + 'images/tile-dirt.png', True)
-
-        self.tiles = numpy.empty([Globals.mapwidth*2, Globals.mapheight, Globals.mapdepth], dtype=object)
+        self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight, Globals.mapdepth], dtype=object)
 
         #Waiting for mouse move signal
         Globals.glwidget.mouseMove.connect(self.moveCamera)
@@ -71,20 +64,13 @@ class Map():
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
-                if randint(0,10) > 8:
-                    self.tiles[x][y][0] = choice(self.foliageTiles)
-                else:
-                    self.tiles[x][y][0] = choice(self.groundTiles)
-                self.tiles[(x+Globals.mapwidth)][y][0] = self.dirtTile
+                self.tiles[x][y][0] = choice(self.groundTiles)
         self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
-        # Uncomment the next line (and comment the above line) for underground view.
-        self.undergroundView = View(self.tiles[:,:,0]) #tiles[every x, only 0 for y, every z]
         self.view = self.groundView
 
     def update(self):
         if self.ant.pos != self.ant.newPos:
-            self.ant.move(self.ant.newPos[0]/24, self.ant.newPos[1]/24)
-            self.view.setView(self.undergroundView)
+            self.ant.move(self.ant.newPos[0]/Globals.pixelsize, self.ant.newPos[1]/Globals.pixelsize)
 
     def moveCamera(self,x,y,speed = 2):
         try: # We try and cancel any previous camera movements.
@@ -102,13 +88,13 @@ class Map():
         if x<=(0.1*w) and Globals.glwidget.camera[0]<=0:
             mousePosX += 1 * speed
             loop = True
-        if x>=(w - 0.1*w) and Globals.glwidget.camera[0]>=Globals.mapwidth*-24 +w:
+        if x>=(w - 0.1*w) and Globals.glwidget.camera[0]>=Globals.mapwidth*-Globals.pixelsize +w:
             mousePosX -= 1 * speed
             loop = True
         if y<=(0.1*h) and Globals.glwidget.camera[1]<=0:
             mousePosY += 1 * speed
             loop = True
-        if y>=(h - 0.1*h) and Globals.glwidget.camera[1]>=Globals.mapheight*-24 +h:
+        if y>=(h - 0.1*h) and Globals.glwidget.camera[1]>=Globals.mapheight*-Globals.pixelsize +h:
             mousePosY -= 1 * speed
             loop = True
         Globals.glwidget.camera[0] += mousePosX - x
