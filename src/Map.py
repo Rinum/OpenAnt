@@ -55,6 +55,11 @@ class Map():
         for fname in dirList:
             self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
 
+        #Populate list of foliage tiles
+        dirList = os.listdir(self.foliageTilesPath)
+        for fname in dirList:
+            self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
+
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight, Globals.mapdepth], dtype=object)
 
         #Waiting for mouse move signal
@@ -64,7 +69,10 @@ class Map():
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
-                self.tiles[x][y][0] = choice(self.groundTiles)
+                if randint(0,10) > 8:
+                    self.tiles[x][y][0] = choice(self.foliageTiles)
+                else:
+                    self.tiles[x][y][0] = choice(self.groundTiles)
         self.groundView = View(self.tiles[:,:,0]) #tiles[every x, every y, only 0 for z]
         self.view = self.groundView
 

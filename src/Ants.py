@@ -32,18 +32,18 @@ class Ants():
     '''
     def __init__(self,xpos,ypos):
         #initialize ant position to (xpos,ypos)
-        self.pos = [xpos*24, ypos*24]
-        self.newPos = [xpos*24, ypos*24]
+        self.pos = [xpos*32, ypos*32]
+        self.newPos = [xpos*32, ypos*32]
         self.moving = False
-        self.N = [0, 24, 24, 24]
-        self.S = [24, 24, 24, 24]
-        self.E = [48, 24, 24, 24]
-        self.W = [72, 24, 24, 24]
-        self.NW = [0, 0, 24, 24]
-        self.NE = [24, 0, 24, 24]
-        self.SW = [48, 0, 24, 24]
-        self.SE = [72, 0, 24, 24]
-        self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [24, 24, 24, 24], [self.pos[0], self.pos[1], 24, 24])
+        self.N = [0, 32, 32, 32]
+        self.S = [32, 32, 32, 32]
+        self.E = [64, 32, 32, 32]
+        self.W = [96, 32, 32, 32]
+        self.NW = [0, 0, 32, 32]
+        self.NE = [32, 0, 32, 32]
+        self.SW = [64, 0, 32, 32]
+        self.SE = [96, 0, 32, 32]
+        self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
         self.sprite.setTextureRect(self.S)
         self.direction = self.S
 
@@ -55,20 +55,20 @@ class Ants():
 	# TODO: Implement a path finding algrothem like A*
 	newDirection = ""
         if self.pos[0] < x*Globals.pixelsize:
-            self.pos[0] += 1
+            self.pos[0] += 2
             newDirection = "E"
         elif self.pos[0] > x*Globals.pixelsize:
-            self.pos[0] -= 1
+            self.pos[0] -= 2
             newDirection = "W"
         if self.pos[1] < y*Globals.pixelsize:
-            self.pos[1] += 1
+            self.pos[1] += 2
             newDirection = "S" + newDirection
         elif self.pos[1] > y*Globals.pixelsize:
-            self.pos[1] -= 1
+            self.pos[1] -= 2
             newDirection = "N" + newDirection
         if(newDirection != ""):
 	    newDirection = "self." + newDirection
             self.direction = eval(newDirection)
 	    self.sprite.setTextureRect(self.direction) # Update sprite location.
-	self.sprite.setDrawRect([self.pos[0], self.pos[1], 24, 24])
+	self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
 
