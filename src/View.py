@@ -35,7 +35,31 @@ class View():
         for x in range(self.width):
             for y in range(self.height):
                 self.tiles[x][y] = Globals.glwidget.createImage(mapSlice[x,y].image, 0, [1, 1, -1, -1], [x*Globals.pixelsize, y*Globals.pixelsize, -1, -1], hidden)
-
+    
     def delete(self):
 	# Delete all images
         pass # not implemented yet.
+
+    def ground(self, x=0, y=0):
+        Globals.leftBound = 0
+        Globals.rightBound = -1 * Globals.mapwidth * Globals.pixelsize
+        Globals.upBound = 0
+        Globals.downBound = -1 * (Globals.mapheight/2) * Globals.pixelsize
+        Globals.glwidget.camera[0] = x
+        Globals.glwidget.camera[1] = y       
+
+    def blackNest(self, x=Globals.blackNestX, y=Globals.blackNestY):
+        Globals.leftBound = 0
+        Globals.rightBound = Globals.redNestX
+        Globals.upBound = Globals.blackNestY
+        Globals.downBound = -1 * Globals.mapheight * Globals.pixelsize
+        Globals.glwidget.camera[0] = x
+        Globals.glwidget.camera[1] = y
+        
+    def redNest(self, x=Globals.redNestX,y=Globals.redNestY):
+        Globals.leftBound = Globals.redNestY
+        Globals.rightBound = -1 * Globals.mapwidth * Globals.pixelsize
+        Globals.upBound = Globals.redNestY
+        Globals.downBound = -1 * Globals.mapheight * Globals.pixelsize
+        Globals.glwidget.camera[0] = x
+        Globals.glwidget.camera[1] = y

@@ -66,8 +66,8 @@ class MainWindow(QMainWindow):
         if Globals.musicOn:
             Globals.muspanel = MusPanel(self)
 
-        #draw map
-        self.map.generateMap()
+        #draw map... set view to ground
+        Globals.view = self.map.generateMap()
 
     def drawTimerTimeout(self):
         self.map.update()

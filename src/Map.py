@@ -87,11 +87,12 @@ class Map():
                 else:
                     self.tiles[x][y] = choice(self.undergroundTiles) #underground map
                     
-        View(self.tiles[:,:]) #tiles[every x, every y]
+        return View(self.tiles[:,:]) #tiles[every x, every y]
 
 
     def update(self):
         if self.ant.pos != self.ant.newPos:
+            Globals.view.blackNest()
             self.ant.move(self.ant.newPos[0]/Globals.pixelsize, self.ant.newPos[1]/Globals.pixelsize)
 
     def moveCamera(self,x,y,speed = 3):
