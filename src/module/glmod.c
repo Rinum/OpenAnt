@@ -9,13 +9,13 @@
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
 #else
+    #include <GL/gl.h>
+
     #ifdef _WIN32
         #include <windows.h>
         #include "glext.h"
         PFNGLBINDBUFFERPROC glBindBuffer = NULL;
     #endif
-
-    #include <GL/gl.h>
 #endif
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
