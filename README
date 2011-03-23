@@ -10,3 +10,6 @@ Dependencies:
 -pyqt
 -numpy
 
+Ubuntu packages:
+sudo apt-get install git python-qt4 python-qt4-gl python-opengl python-numpy python-qt4-phonon
+
