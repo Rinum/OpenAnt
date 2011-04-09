@@ -165,11 +165,6 @@ class GLWidget(QGLWidget):
         '''
         FILL IN LATER PLOX
         '''
-
-        if not hasGLExtension("GL_ARB_texture_rectangle"):
-            self.texext = GL_TEXTURE_2D
-
-        qimg = QImage(qimagepath)
         
         layer = int(layer)
         texture = None
