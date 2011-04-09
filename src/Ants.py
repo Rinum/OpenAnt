@@ -23,8 +23,8 @@ from GLWidget import *
 import Globals
 from PyQt4.QtCore import *
 
-import time
-from threading import Timer
+#import time
+#from threading import Timer
 
 class Ants():
     '''
@@ -48,12 +48,12 @@ class Ants():
         self.direction = self.S
 
     def move(self, x, y):
-        try: # We try and cancel any previous movements.
-	    self.t.cancel()
-	except:
-	    pass
-	# TODO: Implement a path finding algrothem like A*
-	newDirection = ""
+        #try: # We try and cancel any previous movements.
+            #self.t.cancel()
+        #except:
+            #pass
+        # TODO: Implement a path finding algrothem like A*
+        newDirection = ""
         if self.pos[0] < x*Globals.pixelsize:
             self.pos[0] += 2
             newDirection = "E"
@@ -66,9 +66,9 @@ class Ants():
         elif self.pos[1] > y*Globals.pixelsize:
             self.pos[1] -= 2
             newDirection = "N" + newDirection
-        if(newDirection != ""):
-	    newDirection = "self." + newDirection
+        if newDirection != "":
+            newDirection = "self." + newDirection
             self.direction = eval(newDirection)
-	    self.sprite.setTextureRect(self.direction) # Update sprite location.
-	self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
+            self.sprite.setTextureRect(self.direction) # Update sprite location.
+        self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
 

@@ -41,7 +41,6 @@ class Image(object):
         self.dynamicity = dynamicity
         self.textureId = None
         self.offset = None
-        self.VBO = None
         self._hidden = hidden
         self.qimg = qimg
 
@@ -79,7 +78,7 @@ class Image(object):
             VBOData = self.getVBOData()
             vertByteCount = ADT.arrayByteCount(VBOData)
 
-            glBindBuffer(GL_ARRAY_BUFFER_ARB, self.VBO)
+            glBindBuffer(GL_ARRAY_BUFFER_ARB, Globals.glwidget.VBO)
             glBufferSubData(GL_ARRAY_BUFFER_ARB, int(self.offset*vertByteCount/4), vertByteCount, VBOData)
 
     def setTextureRect(self, textureRect):
@@ -90,6 +89,13 @@ class Image(object):
             w = float(textureRect[2])/float(self.qimg.width())
             h = float(textureRect[3])/float(self.qimg.height())
             self.textureRect = [x, y, w, h]
+
+        if Globals.vbos:
+            VBOData = self.getVBOData()
+            vertByteCount = ADT.arrayByteCount(VBOData)
+
+            glBindBuffer(GL_ARRAY_BUFFER_ARB, Globals.glwidget.VBO)
+            glBufferSubData(GL_ARRAY_BUFFER_ARB, int(self.offset*vertByteCount/4), vertByteCount, VBOData)
 
     def getVBOData(self):
         x, y, w, h = self.textureRect

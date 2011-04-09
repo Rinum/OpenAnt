@@ -68,7 +68,7 @@ class GLWidget(QGLWidget):
     def __init__(self, parent):
         QGLWidget.__init__(self, parent)
         self.setMinimumSize(640, 480)
-	self.w = 640
+        self.w = 640
         self.h = 480
         self.x = 0
         self.images = dict()
@@ -82,6 +82,7 @@ class GLWidget(QGLWidget):
         self.vbolist = []
         self.qimages = {}
         self.texext = GL_TEXTURE_RECTANGLE_ARB
+        self.movecam = False
         
         self.setMouseTracking(True) #Tracks mouse location (disables map drag)
 
@@ -397,8 +398,11 @@ class GLWidget(QGLWidget):
             self.calculateVBOList()
 
     def mouseMoveEvent(self, mouse):
+        if self.movecam:
+            self.camera[0] += mouse.pos().x() - self.lastMousePos[0]
+            self.camera[1] += mouse.pos().y() - self.lastMousePos[1]
         self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
-        self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
+        #self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
         
         mouse.accept()
 
@@ -409,13 +413,23 @@ class GLWidget(QGLWidget):
 
         if mouse.button() == Qt.LeftButton:
             button = 1
-        elif mouse.button == Qt.RightButton:
+        elif mouse.button() == Qt.RightButton:
             button = 2
-        elif mouse.button == Qt.MidButton:
+            self.movecam = True
+        elif mouse.button() == Qt.MidButton:
             button = 3
         self.mousePress.emit(button, (mouse.pos().x()-self.camera[0])/self.zoom, (mouse.pos().y()-self.camera[1])/self.zoom)
 
         mouse.accept()
+        
+    def mouseReleaseEvent(self, mouse):
+    
+        if mouse.button() == Qt.RightButton:
+            self.movecam = False
+            
+    def leaveEvent(self, event):
+    
+        self.movecam = False
 
     def wheelEvent(self, mouse):
         oldCoord = [mouse.pos().x(), mouse.pos().y()]

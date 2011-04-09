@@ -23,7 +23,7 @@ from View import View
 from Ants import *
 
 from random import *
-from threading import Timer
+#from threading import Timer
 
 class Tile():
     '''
@@ -73,7 +73,7 @@ class Map():
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
 
         #Waiting for mouse move signal
-        Globals.glwidget.mouseMove.connect(self.moveCamera)
+        #Globals.glwidget.mouseMove.connect(self.moveCamera)
         Globals.glwidget.mousePress.connect(self.getCoords)
         
     def generateMap(self):
@@ -92,14 +92,14 @@ class Map():
 
     def update(self):
         if self.ant.pos != self.ant.newPos:
-            Globals.view.blackNest()
+            #Globals.view.blackNest()
             self.ant.move(self.ant.newPos[0]/Globals.pixelsize, self.ant.newPos[1]/Globals.pixelsize)
 
-    def moveCamera(self,x,y,speed = 3):
+    def move2Camera(self,x,y,speed = 3):
         try: # We try and cancel any previous camera movements.
-	    self.t.cancel()
-	except:
-	    pass
+            self.t.cancel()
+        except:
+            pass
 	
         w = Globals.glwidget.w #viewport width
         h = Globals.glwidget.h #viewport height
@@ -131,5 +131,5 @@ class Map():
         '''
         On click, move ant
         '''
-	if button == 1:
+        if button == 1:
             self.ant.newPos = [x, y]

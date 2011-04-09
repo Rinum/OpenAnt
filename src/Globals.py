@@ -27,8 +27,8 @@ player = None
 overMap= None
 datadir = "../data/"
 pixelsize = 32
-mapheight = 64 + 64 #ground + underground
-mapwidth = 128
+mapheight = 32 + 32 #ground + underground
+mapwidth = 64
 
 #nest coordinates
 blackNestX = 0
