@@ -402,8 +402,12 @@ class GLWidget(QGLWidget):
 
     def mouseMoveEvent(self, mouse):
         if self.movecam:
-            self.camera[0] += mouse.pos().x() - self.lastMousePos[0]
-            self.camera[1] += mouse.pos().y() - self.lastMousePos[1]
+            newx = self.camera[0] + mouse.pos().x() - self.lastMousePos[0]
+            newy = self.camera[1] + mouse.pos().y() - self.lastMousePos[1]
+            if Globals.rightBound+self.w<=newx<=Globals.leftBound:
+                self.camera[0] = newx
+            if Globals.downBound+self.h<=newy<=Globals.upBound:
+                self.camera[1] = newy
         self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
         #self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
         
