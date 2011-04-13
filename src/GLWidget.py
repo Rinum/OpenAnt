@@ -166,6 +166,9 @@ class GLWidget(QGLWidget):
         '''
         FILL IN LATER PLOX
         '''
+
+        if not hasGLExtension("GL_ARB_texture_rectangle"):
+            self.texext = GL_TEXTURE_2D
         
         layer = int(layer)
         texture = None
