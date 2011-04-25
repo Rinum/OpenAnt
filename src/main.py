@@ -56,11 +56,11 @@ class MainWindow(QMainWindow):
             self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
             Phonon.createPath(Globals.mediaobject, self.audioOutput)
 
+        self.map = Map() #map class
+
         self.drawTimer = QTimer()
         self.drawTimer.timeout.connect(self.drawTimerTimeout)
         self.drawTimer.start(0.2)
-
-        self.map = Map() #map class
         
     def start(self):
         if Globals.musicOn:

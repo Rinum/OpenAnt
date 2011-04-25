@@ -41,7 +41,7 @@ class Map():
     Class for generating maps
     '''
     def __init__(self):
-        self.ant = Ants(8, 6) #ants class
+
         #Ground tiles
         self.groundTilesPath = Globals.datadir + 'images/ground/'
         self.groundTiles = []
@@ -73,10 +73,11 @@ class Map():
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
 
         #Waiting for mouse move signal
-        #Globals.glwidget.mouseMove.connect(self.moveCamera)
         Globals.glwidget.mousePress.connect(self.getCoords)
         
     def generateMap(self):
+        self.ant = Ants(8, 6) #ants class
+        
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
                 if (y <= Globals.mapheight/2):
@@ -94,38 +95,6 @@ class Map():
         if self.ant.pos != self.ant.newPos:
             #Globals.view.blackNest()
             self.ant.move(self.ant.newPos[0]/Globals.pixelsize, self.ant.newPos[1]/Globals.pixelsize)
-
-    def move2Camera(self,x,y,speed = 3):
-        try: # We try and cancel any previous camera movements.
-            self.t.cancel()
-        except:
-            pass
-	
-        w = Globals.glwidget.w #viewport width
-        h = Globals.glwidget.h #viewport height
-
-        mousePosX = x
-        mousePosY = y
-        loop = False
-
-        if x<=(0.1*w) and Globals.glwidget.camera[0]<=Globals.leftBound:
-            mousePosX += 1 * speed
-            loop = True
-        if x>=(w - 0.1*w) and Globals.glwidget.camera[0]>=Globals.rightBound +w:
-            mousePosX -= 1 * speed
-            loop = True
-        if y<=(0.1*h) and Globals.glwidget.camera[1]<=Globals.upBound:
-            mousePosY += 1 * speed
-            loop = True
-        if y>=(h - 0.1*h) and Globals.glwidget.camera[1]>=Globals.downBound +h:
-            mousePosY -= 1 * speed
-            loop = True
-        Globals.glwidget.camera[0] += mousePosX - x
-        Globals.glwidget.camera[1] += mousePosY - y
-
-        if loop == True:
-            self.t = Timer(0.01, self.moveCamera, (x, y))
-            self.t.start()
 
     def getCoords(self, button, x, y):
         '''

@@ -130,8 +130,8 @@ class GLWidget(QGLWidget):
         global mod
 
         if not hasGLExtension("GL_ARB_texture_rectangle"):
-            print "GL_TEXTURE_RECTANGLE_ARB not supported, switching to GL_TEXTURE_2D"
-            self.texext = GL_TEXTURE_2D
+           print "GL_TEXTURE_RECTANGLE_ARB not supported, switching to GL_TEXTURE_2D"
+           self.texext = GL_TEXTURE_2D
 
         glEnable(self.texext)
         glEnable(GL_BLEND)
@@ -166,9 +166,6 @@ class GLWidget(QGLWidget):
         '''
         FILL IN LATER PLOX
         '''
-
-        if not hasGLExtension("GL_ARB_texture_rectangle"):
-            self.texext = GL_TEXTURE_2D
         
         layer = int(layer)
         texture = None
