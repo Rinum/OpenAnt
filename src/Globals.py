@@ -53,4 +53,5 @@ try:
     musicOn = True
 except ImportError as e:
     musicOn = False
+    print "PyQt4 phonon not found, continuing without music."
     
