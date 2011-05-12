@@ -45,7 +45,9 @@ class Ants():
         self.direction = self.S
         self.queue = []
 
-    def move(self, x, y):
+    def move(self):
+        x = self.newPos[0]
+        y = self.newPos[1]
         newDirection = ""
         if self.pos[0] < x:
             self.pos[0] += 4
@@ -59,6 +61,8 @@ class Ants():
         elif self.pos[1] > y:
             self.pos[1] -= 4
             newDirection = "N" + newDirection
+        if self.pos[0] == x and self.pos[1] == y:
+            self.queue = self.queue[1:] #Ant has reached its destination
         if newDirection != "":
             newDirection = "self." + newDirection
             self.direction = eval(newDirection)
@@ -66,5 +70,5 @@ class Ants():
         self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
         
     def dig(self):
-        if self.pos == self.newPos:
-            print "WE CAN DIG!"
+        print "WE CAN DIG!"
+        self.queue = self.queue[1:] #Ant has dug

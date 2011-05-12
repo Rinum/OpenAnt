@@ -97,8 +97,8 @@ class Map():
 
 
     def update(self):
-        if self.ant.pos != self.ant.newPos:
-            self.ant.move(self.ant.newPos[0], self.ant.newPos[1])
+        if len(self.ant.queue):
+            self.ant.queue[0]()
 
     def getCoords(self, button, x, y):
         '''
@@ -108,9 +108,12 @@ class Map():
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
             self.ant.newPos = [x, y]
+            self.ant.queue.append(self.ant.move)
         
         if self.lastButton == button and time()-self.lastClick < 0.5:
-            self.ant.dig()
+            if self.ant.dig in self.ant.queue:
+                self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
+            self.ant.queue.append(self.ant.dig)
             
         self.lastButton = button
         self.lastClick = time()
