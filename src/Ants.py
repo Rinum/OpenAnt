@@ -48,16 +48,16 @@ class Ants():
     def move(self, x, y):
         newDirection = ""
         if self.pos[0] < x:
-            self.pos[0] += 2
+            self.pos[0] += 4
             newDirection = "E"
         elif self.pos[0] > x:
-            self.pos[0] -= 2
+            self.pos[0] -= 4
             newDirection = "W"
         if self.pos[1] < y:
-            self.pos[1] += 2
+            self.pos[1] += 4
             newDirection = "S" + newDirection
         elif self.pos[1] > y:
-            self.pos[1] -= 2
+            self.pos[1] -= 4
             newDirection = "N" + newDirection
         if newDirection != "":
             newDirection = "self." + newDirection

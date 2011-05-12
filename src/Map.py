@@ -110,7 +110,7 @@ class Map():
             self.ant.newPos = [x, y]
         
         if self.lastButton == button and time()-self.lastClick < 0.5:
-            self.ant.dig(x,y)
+            self.ant.dig()
             
         self.lastButton = button
         self.lastClick = time()

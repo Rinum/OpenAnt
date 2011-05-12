@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
 
         self.drawTimer = QTimer()
         self.drawTimer.timeout.connect(self.drawTimerTimeout)
-        self.drawTimer.start(0.2)
+        self.drawTimer.start(15)
         
     def start(self):
         if Globals.musicOn:
