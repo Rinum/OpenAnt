@@ -23,6 +23,7 @@ from View import View
 from Ants import *
 
 from random import *
+from time import time
 #from threading import Timer
 
 class Tile():
@@ -75,6 +76,10 @@ class Map():
         #Waiting for mouse move signal
         Globals.glwidget.mousePress.connect(self.getCoords)
         
+        #Double Click?
+        self.lastButton = 0
+        self.lastClick = 0
+        
     def generateMap(self):
         self.ant = Ants(8, 6) #ants class
         
@@ -93,12 +98,19 @@ class Map():
 
     def update(self):
         if self.ant.pos != self.ant.newPos:
-            #Globals.view.blackNest()
-            self.ant.move(self.ant.newPos[0]/Globals.pixelsize, self.ant.newPos[1]/Globals.pixelsize)
+            self.ant.move(self.ant.newPos[0], self.ant.newPos[1])
 
     def getCoords(self, button, x, y):
         '''
         On click, move ant
         '''
+        x = (x/Globals.pixelsize)*Globals.pixelsize
+        y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
             self.ant.newPos = [x, y]
+        
+        if self.lastButton == button and time()-self.lastClick < 0.5:
+            self.ant.dig(x,y)
+            
+        self.lastButton = button
+        self.lastClick = time()

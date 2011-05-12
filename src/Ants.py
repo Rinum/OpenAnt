@@ -23,9 +23,6 @@ from GLWidget import *
 import Globals
 from PyQt4.QtCore import *
 
-#import time
-#from threading import Timer
-
 class Ants():
     '''
     Class for generating ants
@@ -46,24 +43,20 @@ class Ants():
         self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
         self.sprite.setTextureRect(self.S)
         self.direction = self.S
+        self.queue = []
 
     def move(self, x, y):
-        #try: # We try and cancel any previous movements.
-            #self.t.cancel()
-        #except:
-            #pass
-        # TODO: Implement a path finding algrothem like A*
         newDirection = ""
-        if self.pos[0] < x*Globals.pixelsize:
+        if self.pos[0] < x:
             self.pos[0] += 2
             newDirection = "E"
-        elif self.pos[0] > x*Globals.pixelsize:
+        elif self.pos[0] > x:
             self.pos[0] -= 2
             newDirection = "W"
-        if self.pos[1] < y*Globals.pixelsize:
+        if self.pos[1] < y:
             self.pos[1] += 2
             newDirection = "S" + newDirection
-        elif self.pos[1] > y*Globals.pixelsize:
+        elif self.pos[1] > y:
             self.pos[1] -= 2
             newDirection = "N" + newDirection
         if newDirection != "":
@@ -71,4 +64,7 @@ class Ants():
             self.direction = eval(newDirection)
             self.sprite.setTextureRect(self.direction) # Update sprite location.
         self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
-
+        
+    def dig(self):
+        if self.pos == self.newPos:
+            print "WE CAN DIG!"
