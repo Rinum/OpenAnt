@@ -20,6 +20,7 @@
 import os
 
 from GLWidget import *
+from random import *
 import Globals
 from PyQt4.QtCore import *
 
@@ -27,7 +28,7 @@ class Ants():
     '''
     Class for generating ants
     '''
-    def __init__(self,xpos,ypos):
+    def __init__(self,xpos,ypos,spec,color, ID = 0):
         #initialize ant position to (xpos,ypos)
         self.pos = [xpos*32, ypos*32]
         self.newPos = [xpos*32, ypos*32]
@@ -40,10 +41,21 @@ class Ants():
         self.NE = [32, 0, 32, 32]
         self.SW = [64, 0, 32, 32]
         self.SE = [96, 0, 32, 32]
-        self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
+        
+        # Ant type (Queen, worker, soldier)
+        self.spec = spec
+        self.color = color
+        self.ID = ID
+        
+        if spec == 'worker':
+            self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/' + color + 'ant.png', 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
         self.sprite.setTextureRect(self.S)
         self.direction = self.S
         self.queue = []
+
+        if self.color != 'yellow':
+            self.queue.append(self.move)
+
 
     def move(self):
         x = self.newPos[0]
@@ -63,12 +75,19 @@ class Ants():
             newDirection = "N" + newDirection
         if self.pos[0] == x and self.pos[1] == y:
             self.queue = self.queue[1:] #Ant has reached its destination
+            if self.color == 'black': #Black ants move around randomly
+                newx = randint(1, Globals.mapheight) * Globals.pixelsize
+                newy = randint(1, Globals.mapwidth-Globals.mapdepth) * Globals.pixelsize
+                self.newPos = [newx, newy]
+                self.moving = True
+                self.queue.append(self.move)
         if newDirection != "":
             newDirection = "self." + newDirection
             self.direction = eval(newDirection)
             self.sprite.setTextureRect(self.direction) # Update sprite location.
         self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
-        
+
+
     def dig(self):
         print "WE CAN DIG!"
         self.queue = self.queue[1:] #Ant has dug
