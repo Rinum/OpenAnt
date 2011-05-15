@@ -84,6 +84,10 @@ class GLWidget(QGLWidget):
         self.texext = GL_TEXTURE_RECTANGLE_ARB
         self.movecam = False
         
+        # Track cursor to paint, let ants follow etc.
+        # Merge with movecam!
+        self.trackCursor = False
+        
         self.setMouseTracking(True) #Tracks mouse location (disables map drag)
 
     #GL functions
@@ -405,6 +409,9 @@ class GLWidget(QGLWidget):
                 self.camera[0] = newx
             if Globals.downBound+self.h<=newy<=Globals.upBound:
                 self.camera[1] = newy
+        elif self.trackCursor:
+            self.mousePress.emit(1, (mouse.pos().x()-self.camera[0])/self.zoom, (mouse.pos().y()-self.camera[1])/self.zoom)
+        
         self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
         #self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
         
@@ -417,6 +424,7 @@ class GLWidget(QGLWidget):
 
         if mouse.button() == Qt.LeftButton:
             button = 1
+            self.trackCursor = True
         elif mouse.button() == Qt.RightButton:
             button = 2
             self.movecam = True
@@ -430,10 +438,13 @@ class GLWidget(QGLWidget):
     
         if mouse.button() == Qt.RightButton:
             self.movecam = False
+        elif mouse.button() == Qt.LeftButton:
+            self.trackCursor = False
             
     def leaveEvent(self, event):
     
         self.movecam = False
+        self.trackCursor = False
 
     def wheelEvent(self, mouse):
         oldCoord = [mouse.pos().x(), mouse.pos().y()]

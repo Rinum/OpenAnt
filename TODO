@@ -6,35 +6,13 @@
       |                               
       '  
 
-Short-Term Goal: Playable SimAnt style 1v1 multiplayer desktop game.
-Long-Term Goal: SimAnt inspired MMO which is playable in-browser.
-Wishful Thinking: ??? PROFIT! ... maybe create a python based Game/MMO/Sim engine out of the completed game.
+wonko:
 
-PROGRESS(%) - MILESTONES
-              (Completed)->Sub-task
-
-(1%) - Get a working user interface with some basic graphics
-          -> Tiles
-             -> Ground
-             -> Foliage
-             -> Ants
-             -> Insects
-             -> Underground
-          -> Menu
-             -> Logo
-             -> Background Art
-             -> Buttons
-          -> Map
-             -> Map Class?
-             -> Generation
-          -> Controls
-             -> Ant Class?
-
-(0%) - Get networking done between server and client. That is, the basic connect - send message stuff. Not the entire networking protocol.
+- new command clears queue (when sending ant to dig, then issue new move-only command, ant still wants to dig!)
+- holding shift adds to end of command queue (too RTS?)
+- mouse down movement tracking (spray pheromones etc, follow mouse cursor)
+- tile based movement/location unnecessary (makes chaotic movement so much more difficult!)
+- include z-coordinate for underground (< 0) and climbing over foliage (> 0) for terrain
+- Zoom breaks View limitation
 
 
-(0%) - Get a simple world modeled on the server, which the client neatly displays. This would include moving ants, without purpose
-
-(0%) - Make client able to directly move his owned ant, and make sure this propagates to both clients.
-
-(0%) - Create some basic AI and flesh out the notions of having a colony.

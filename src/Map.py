@@ -102,18 +102,25 @@ class Map():
 
     def getCoords(self, button, x, y):
         '''
-        On click, move ant
+        On single click, move ant
+        On double click, isse command in context of tile
         '''
         x = (x/Globals.pixelsize)*Globals.pixelsize
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
+            # SHOULD: Clear full command queue (gather food, dig, ...)            
+            if self.ant.dig in self.ant.queue:
+                self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
             self.ant.newPos = [x, y]
             self.ant.queue.append(self.ant.move)
-        
-        if self.lastButton == button and time()-self.lastClick < 0.5:
+       
+        if self.lastButton == button and time()-self.lastClick < 0.2:
             if self.ant.dig in self.ant.queue:
                 self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
             self.ant.queue.append(self.ant.dig)
-            
-        self.lastButton = button
+            self.lastButton = 0 # Quick single click after double click as single click
+        else:
+            self.lastButton = button           
+      
         self.lastClick = time()
+        
