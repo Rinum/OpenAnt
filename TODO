@@ -8,11 +8,20 @@
 
 wonko:
 
-- new command clears queue (when sending ant to dig, then issue new move-only command, ant still wants to dig!)
 - holding shift adds to end of command queue (too RTS?)
-- mouse down movement tracking (spray pheromones etc, follow mouse cursor)
 - tile based movement/location unnecessary (makes chaotic movement so much more difficult!)
 - include z-coordinate for underground (< 0) and climbing over foliage (> 0) for terrain
-- Zoom breaks View limitation
+- double click location based check, not time based
+- debug flag (intention-based color coding, path/trails, debug tileset, full view)
+- why are coordinates negative? (camera etc)
+- (priority list based on state/pheromones? Attack, gather, dig, run, pull, push, carry, rescue, eat, groom ... )
 
+controls proposal:
+Left Click  - Move Ant
+Left Hld/Mv - Spray, Lure ant
+Double Left - Context dependent action 
 
+Right Click  - Menu
+Right Hld/Mv - Move Camera
+
+Shift Hld  - Command Queue

@@ -113,6 +113,8 @@ class Map():
         '''
         On single click, move ant
         On double click, isse command in context of tile
+        
+        TODO: single click records coordinates, double click checks for match      
         '''
         x = (x/Globals.pixelsize)*Globals.pixelsize
         y = (y/Globals.pixelsize)*Globals.pixelsize
