@@ -33,7 +33,7 @@ mapheight = 32 + mapdepth #ground + underground?
 
 
 #Scenario Data --- should be read from scenario file!
-InitialPopulation = 30
+InitialPopulation = 200
 
 #nest coordinates
 blackNestX = 0

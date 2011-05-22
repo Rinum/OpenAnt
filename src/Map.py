@@ -90,7 +90,7 @@ class Map():
         
         self.ants.append(Ants(8, 6, 'worker', 'yellow', 0))  #ants class
         for n in range(Globals.InitialPopulation):
-            self.ants.append(Ants(1 + n, 5, 'worker', 'black', n+1))
+            self.ants.append(Ants(3, 3, 'worker', 'black', n+1))
         
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
