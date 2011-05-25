@@ -6,35 +6,22 @@
       |                               
       '  
 
-Short-Term Goal: Playable SimAnt style 1v1 multiplayer desktop game.
-Long-Term Goal: SimAnt inspired MMO which is playable in-browser.
-Wishful Thinking: ??? PROFIT! ... maybe create a python based Game/MMO/Sim engine out of the completed game.
+wonko:
 
-PROGRESS(%) - MILESTONES
-              (Completed)->Sub-task
+- holding shift adds to end of command queue (too RTS?)
+- tile based movement/location unnecessary (makes chaotic movement so much more difficult!)
+- include z-coordinate for underground (< 0) and climbing over foliage (> 0) for terrain
+- double click location based check, not time based
+- debug flag (intention-based color coding, path/trails, debug tileset, full view)
+- why are coordinates negative? (camera etc)
+- (priority list based on state/pheromones? Attack, gather, dig, run, pull, push, carry, rescue, eat, groom ... )
 
-(1%) - Get a working user interface with some basic graphics
-          -> Tiles
-             -> Ground
-             -> Foliage
-             -> Ants
-             -> Insects
-             -> Underground
-          -> Menu
-             -> Logo
-             -> Background Art
-             -> Buttons
-          -> Map
-             -> Map Class?
-             -> Generation
-          -> Controls
-             -> Ant Class?
+controls proposal:
+Left Click  - Move Ant
+Left Hld/Mv - Spray, Lure ant
+Double Left - Context dependent action 
 
-(0%) - Get networking done between server and client. That is, the basic connect - send message stuff. Not the entire networking protocol.
+Right Click  - Menu
+Right Hld/Mv - Move Camera
 
-
-(0%) - Get a simple world modeled on the server, which the client neatly displays. This would include moving ants, without purpose
-
-(0%) - Make client able to directly move his owned ant, and make sure this propagates to both clients.
-
-(0%) - Create some basic AI and flesh out the notions of having a colony.
+Shift Hld  - Command Queue

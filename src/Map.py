@@ -73,6 +73,12 @@ class Map():
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
 
+        #List of Ants
+        self.ants = []
+        
+        #Active Ant
+        self.active = 0
+        
         #Waiting for mouse move signal
         Globals.glwidget.mousePress.connect(self.getCoords)
         
@@ -81,7 +87,10 @@ class Map():
         self.lastClick = 0
         
     def generateMap(self):
-        self.ant = Ants(8, 6) #ants class
+        
+        self.ants.append(Ants(8, 6, 'worker', 'yellow', 0))  #ants class
+        for n in range(Globals.InitialPopulation):
+            self.ants.append(Ants(3, 3, 'worker', 'black', n+1))
         
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
@@ -95,25 +104,34 @@ class Map():
                     
         return View(self.tiles[:,:]) #tiles[every x, every y]
 
-
     def update(self):
-        if len(self.ant.queue):
-            self.ant.queue[0]()
+        for ant in self.ants:
+            if len(ant.queue):
+                ant.queue[0]()
 
     def getCoords(self, button, x, y):
         '''
-        On click, move ant
+        On single click, move ant
+        On double click, isse command in context of tile
+        
+        TODO: single click records coordinates, double click checks for match      
         '''
         x = (x/Globals.pixelsize)*Globals.pixelsize
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
-            self.ant.newPos = [x, y]
-            self.ant.queue.append(self.ant.move)
-        
-        if self.lastButton == button and time()-self.lastClick < 0.5:
-            if self.ant.dig in self.ant.queue:
-                self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
-            self.ant.queue.append(self.ant.dig)
-            
-        self.lastButton = button
+            # SHOULD: Clear full command queue (gather food, dig, ...)            
+            if self.ants[self.active].dig in self.ants[self.active].queue:
+                self.ants[self.active].queue.remove(self.ants[self.active].dig) #Cancel previous dig command
+            self.ants[self.active].newPos = [x, y]
+            self.ants[self.active].queue.append(self.ants[self.active].move)
+       
+        if self.lastButton == button and time()-self.lastClick < 0.2:
+            if self.ants[self.active].dig in self.ants[self.active].queue:
+                self.ants[self.active].queue.remove(self.ants[self.active].dig) #Cancel previous dig command
+            self.ants[self.active].queue.append(self.ants[self.active].dig)
+            self.lastButton = 0 # Quick single click after double click as single click
+        else:
+            self.lastButton = button           
+      
         self.lastClick = time()
+        

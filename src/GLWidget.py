@@ -84,6 +84,10 @@ class GLWidget(QGLWidget):
         self.texext = GL_TEXTURE_RECTANGLE_ARB
         self.movecam = False
         
+        # Track cursor to paint, let ants follow etc.
+        # Merge with movecam!
+        self.trackCursor = False
+        
         self.setMouseTracking(True) #Tracks mouse location (disables map drag)
 
     #GL functions
@@ -401,10 +405,14 @@ class GLWidget(QGLWidget):
         if self.movecam:
             newx = self.camera[0] + mouse.pos().x() - self.lastMousePos[0]
             newy = self.camera[1] + mouse.pos().y() - self.lastMousePos[1]
-            if Globals.rightBound+self.w<=newx<=Globals.leftBound:
+            print str(Globals.rightBound + self.w) + ' <= ' + str(newx) + ' <= ' + str(Globals.leftBound)
+            if Globals.rightBound * self.zoom +self.w <= newx <= Globals.leftBound:
                 self.camera[0] = newx
-            if Globals.downBound+self.h<=newy<=Globals.upBound:
+            if Globals.downBound * self.zoom + self.h <= newy <= Globals.upBound:
                 self.camera[1] = newy
+        elif self.trackCursor:
+            self.mousePress.emit(1, (mouse.pos().x()-self.camera[0])/self.zoom, (mouse.pos().y()-self.camera[1])/self.zoom)
+        
         self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
         #self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
         
@@ -417,6 +425,7 @@ class GLWidget(QGLWidget):
 
         if mouse.button() == Qt.LeftButton:
             button = 1
+            self.trackCursor = True
         elif mouse.button() == Qt.RightButton:
             button = 2
             self.movecam = True
@@ -430,10 +439,13 @@ class GLWidget(QGLWidget):
     
         if mouse.button() == Qt.RightButton:
             self.movecam = False
+        elif mouse.button() == Qt.LeftButton:
+            self.trackCursor = False
             
     def leaveEvent(self, event):
     
         self.movecam = False
+        self.trackCursor = False
 
     def wheelEvent(self, mouse):
         oldCoord = [mouse.pos().x(), mouse.pos().y()]
@@ -444,18 +456,24 @@ class GLWidget(QGLWidget):
         oldCoord2[0] *= float(1)/self.zoom
         oldCoord2[1] *= float(1)/self.zoom
 
-        if mouse.delta() < 0:
+        # Change zoom level        
+        if mouse.delta() < 0 and self.zoom > 0.55:
             self.zoom -= 0.15
-        elif mouse.delta() > 0:
+        elif mouse.delta() > 0 and self.zoom < 1.59:
             self.zoom += 0.15
-
-        if self.zoom < 0.30:
-            self.zoom = 0.30
-        elif self.zoom > 4:
-            self.zoom = 4
 
         self.camera[0] = oldCoord2[0] * self.zoom - ((oldCoord[0]*self.zoom)-mouse.pos().x())
         self.camera[1] = oldCoord2[1] * self.zoom - ((oldCoord[1]*self.zoom)-mouse.pos().y())
-
+        
+        # zoom near edges limits view to bounds to prevent zooming into black
+        if Globals.rightBound*self.zoom + self.w > self.camera[0]:
+            self.camera[0] = Globals.rightBound * self.zoom + self.w
+        elif Globals.leftBound * self.zoom < self.camera[0]:
+            self.camera[0] = Globals.leftBound * self.zoom
+        
+        if Globals.downBound * self.zoom + self.h > self.camera[1]:
+            self.camera[1] = Globals.downBound * self.zoom + self.h
+        elif Globals.upBound * self.zoom < self.camera[1]:
+            self.camera[1] = Globals.upBound * self.zoom
 
         mouse.accept()

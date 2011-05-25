@@ -27,8 +27,13 @@ player = None
 overMap= None
 datadir = "../data/"
 pixelsize = 32
-mapheight = 32 + 32 #ground + underground
 mapwidth = 64
+mapdepth = 32
+mapheight = 32 + mapdepth #ground + underground?
+
+
+#Scenario Data --- should be read from scenario file!
+InitialPopulation = 200
 
 #nest coordinates
 blackNestX = 0
