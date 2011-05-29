@@ -36,6 +36,9 @@ class Tile():
 
     def __repr__(self):
         return self.image
+    
+    def isPassable(self):
+        return self.passable
 
 class Map():
     '''
@@ -69,7 +72,10 @@ class Map():
         #Populate list of foliage tiles
         dirList = os.listdir(self.foliageTilesPath)
         for fname in dirList:
-            self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
+            if "rock" in fname:
+                self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
+            else:
+                self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
 
@@ -80,8 +86,11 @@ class Map():
         self.lastButton = 0
         self.lastClick = 0
         
+        self.lastX = -1
+        self.lastY = -1
+        
     def generateMap(self):
-        self.ant = Ants(8, 6) #ants class
+        self.ant = Ants(8, 6, self.tiles) #ants class
         
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
@@ -92,7 +101,7 @@ class Map():
                         self.tiles[x][y] = choice(self.groundTiles)
                 else:
                     self.tiles[x][y] = choice(self.undergroundTiles) #underground map
-                    
+
         return View(self.tiles[:,:]) #tiles[every x, every y]
 
 
@@ -110,10 +119,15 @@ class Map():
             self.ant.newPos = [x, y]
             self.ant.queue.append(self.ant.move)
         
-        if self.lastButton == button and time()-self.lastClick < 0.5:
+        if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:
             if self.ant.dig in self.ant.queue:
                 self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
             self.ant.queue.append(self.ant.dig)
             
         self.lastButton = button
         self.lastClick = time()
+        self.lastX = x;
+        self.lastY = y;
+        
+    def getTile(self, x, y):
+        return self.tiles[x][y]

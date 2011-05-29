@@ -17,7 +17,6 @@
 #
 # Map Class
 
-import os
 
 from GLWidget import *
 import Globals
@@ -27,10 +26,10 @@ class Ants():
     '''
     Class for generating ants
     '''
-    def __init__(self,xpos,ypos):
+    def __init__(self, xpos, ypos, tiles):
         #initialize ant position to (xpos,ypos)
-        self.pos = [xpos*32, ypos*32]
-        self.newPos = [xpos*32, ypos*32]
+        self.pos = [xpos * 32, ypos * 32]
+        self.newPos = [xpos * 32, ypos * 32]
         self.moving = False
         self.N = [0, 32, 32, 32]
         self.S = [32, 32, 32, 32]
@@ -44,25 +43,33 @@ class Ants():
         self.sprite.setTextureRect(self.S)
         self.direction = self.S
         self.queue = []
+        self.tiles = tiles
 
     def move(self):
         x = self.newPos[0]
         y = self.newPos[1]
+        
         newDirection = ""
         if self.pos[0] < x:
-            self.pos[0] += 4
-            newDirection = "E"
+            if self.tiles[(self.pos[0] + 32) / 32][(self.pos[1]) / 32].isPassable():
+                self.pos[0] += 4
+                newDirection = "E"
         elif self.pos[0] > x:
-            self.pos[0] -= 4
-            newDirection = "W"
+            if self.tiles[self.pos[0] / 32][self.pos[1] / 32].isPassable():
+                self.pos[0] -= 4
+                newDirection = "W"
         if self.pos[1] < y:
-            self.pos[1] += 4
-            newDirection = "S" + newDirection
+            if self.tiles[(self.pos[0] + 26) / 32][(self.pos[1] + 32) / 32].isPassable():
+                self.pos[1] += 4
+                newDirection = "S" + newDirection
         elif self.pos[1] > y:
-            self.pos[1] -= 4
-            newDirection = "N" + newDirection
+            if self.tiles[self.pos[0] / 32][self.pos[1] / 32].isPassable():
+                self.pos[1] -= 4
+                newDirection = "N" + newDirection
+                
         if self.pos[0] == x and self.pos[1] == y:
             self.queue = self.queue[1:] #Ant has reached its destination
+            
         if newDirection != "":
             newDirection = "self." + newDirection
             self.direction = eval(newDirection)
