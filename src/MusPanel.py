@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # This file is part of Open Ant.
 #
@@ -20,7 +20,8 @@
 #
 # By Oipo (kingoipo@gmail.com)
 
-import os, random
+import os
+import random
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

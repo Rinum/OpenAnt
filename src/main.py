@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
 
         #draw map... set view to ground
         Globals.view = self.map.generateMap()
+        self.map.spawnAnts()
 
     def drawTimerTimeout(self):
         self.map.update()

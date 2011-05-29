@@ -15,18 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Open Ant.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Map Class
-
+# Ant class
 
 from GLWidget import *
-import Globals
 from PyQt4.QtCore import *
 
-class Ants():
+class Ant():
     '''
     Class for generating ants
     '''
-    def __init__(self, xpos, ypos, tiles):
+    def __init__(self, xpos, ypos, tiles, sprite):
         #initialize ant position to (xpos,ypos)
         self.pos = [xpos * 32, ypos * 32]
         self.newPos = [xpos * 32, ypos * 32]
@@ -39,12 +37,17 @@ class Ants():
         self.NE = [32, 0, 32, 32]
         self.SW = [64, 0, 32, 32]
         self.SE = [96, 0, 32, 32]
-        self.sprite = Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
+        self.sprite = sprite
         self.sprite.setTextureRect(self.S)
         self.direction = self.S
         self.queue = []
+        
         self.tiles = tiles
-
+        self.speed = 4
+        
+    def setSprite(self, sprite):
+        self.sprite = sprite
+        
     def move(self):
         x = self.newPos[0]
         y = self.newPos[1]
@@ -52,19 +55,19 @@ class Ants():
         newDirection = ""
         if self.pos[0] < x:
             if self.tiles[(self.pos[0] + 32) / 32][(self.pos[1]) / 32].isPassable():
-                self.pos[0] += 4
+                self.pos[0] += self.speed
                 newDirection = "E"
         elif self.pos[0] > x:
             if self.tiles[self.pos[0] / 32][self.pos[1] / 32].isPassable():
-                self.pos[0] -= 4
+                self.pos[0] -= self.speed
                 newDirection = "W"
         if self.pos[1] < y:
             if self.tiles[(self.pos[0] + 26) / 32][(self.pos[1] + 32) / 32].isPassable():
-                self.pos[1] += 4
+                self.pos[1] += self.speed
                 newDirection = "S" + newDirection
         elif self.pos[1] > y:
             if self.tiles[self.pos[0] / 32][self.pos[1] / 32].isPassable():
-                self.pos[1] -= 4
+                self.pos[1] -= self.speed
                 newDirection = "N" + newDirection
                 
         if self.pos[0] == x and self.pos[1] == y:

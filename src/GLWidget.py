@@ -37,14 +37,13 @@ from PyQt4.QtOpenGL import *
 import Globals
 
 mod = False
-if 0:
-    try:
-        print "Loading GLMod"
-        import glmod
-        mod = True
-    except Exception as inst:
-        print "Failed! ", inst
-        pass
+try:
+    print "Loading GLMod"
+    import glmod
+    mod = True
+except Exception as inst:
+    print "Failed! ", inst
+    pass
 
 from Image import *
 

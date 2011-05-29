@@ -20,7 +20,7 @@ import os
 import Globals
 import numpy
 from View import View
-from Ants import *
+from WorkerAnt import *
 
 from random import *
 from time import time
@@ -90,8 +90,6 @@ class Map():
         self.lastY = -1
         
     def generateMap(self):
-        self.ant = Ants(8, 6, self.tiles) #ants class
-        
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
                 if (y <= Globals.mapheight/2):
@@ -104,6 +102,14 @@ class Map():
 
         return View(self.tiles[:,:]) #tiles[every x, every y]
 
+    def spawnAnts(self):
+        _x = randint(0, 10)
+        _y = randint(0, 10)
+        while not self.tiles[_x][_y].isPassable():
+            print "Cant spawn on", _x, _y, "because the tile isnt passable."
+            _x = randint(0, 10)
+            _y = randint(0, 10)
+        self.ant = WorkerAnt(_x, _y, self.tiles, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32])) #ants class
 
     def update(self):
         if len(self.ant.queue):
