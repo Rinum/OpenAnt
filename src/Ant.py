@@ -93,7 +93,12 @@ class Ant():
     def findPath(self):
         start = [self.pos[0] / 32, self.pos[1] / 32]
         end = [self.newPos[0] / 32, self.newPos[1] / 32]
-
+        
+        # Start and end are the same tile, dont need to move.
+        if start == end:
+            self.queue = self.queue[1:]
+            return
+        
         map = self.getMap(start, end)
         
         a = AStar(map, MANHATTAN)
