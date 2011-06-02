@@ -128,11 +128,11 @@ class Map():
             self.ant.newPos = [x, y]
 #            self.ant.queue.append(self.ant.move)
             self.ant.queue.append(self.ant.findPath)
-        
-        if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:
-            if self.ant.dig in self.ant.queue:
-                self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
-            self.ant.queue.append(self.ant.dig)
+            
+            if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:
+                if self.ant.dig in self.ant.queue:
+                    self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
+                self.ant.queue.append(self.ant.dig)
             
         self.lastButton = button
         self.lastClick = time()
