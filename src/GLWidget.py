@@ -395,21 +395,7 @@ class GLWidget(QGLWidget):
         Use Image.hide() instead.
         '''
         if Globals.vbos:
-            self.calculateVBOList()
-
-#    def mouseMoveEvent(self, mouse):
-#        if self.movecam:
-#            newx = self.camera[0] + mouse.pos().x() - self.lastMousePos[0]
-#            newy = self.camera[1] + mouse.pos().y() - self.lastMousePos[1]
-#            if Globals.rightBound+self.w<=newx<=Globals.leftBound:
-#                self.camera[0] = newx
-#            if Globals.downBound+self.h<=newy<=Globals.upBound:
-#                self.camera[1] = newy
-#        self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
-#        #self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
-#        
-#        mouse.accept()
-        
+            self.calculateVBOList()        
         
     def mouseMoveEvent(self, mouse):
         if self.movecam:
@@ -419,22 +405,14 @@ class GLWidget(QGLWidget):
             self.camera[0] = newx
             self.camera[1] = newy
 
-            if newx < Globals.rightBound + self.w:
-                self.camera[0] = Globals.rightBound + self.w
+            if newx < Globals.rightBound * self.zoom + self.w:
+                self.camera[0] = Globals.rightBound * self.zoom + self.w
             elif newx > Globals.leftBound:
                 self.camera[0] = Globals.leftBound
             if newy > Globals.upBound:
                 self.camera[1] = Globals.upBound
-            elif newy < Globals.downBound:
-                self.camera[1] = Globals.downBound
-#            print str(Globals.rightBound + self.w) + ' <= ' + str(newx) + ' | ' + str(Globals.leftBound) + ' <= ' + str(newy)
-#            print str(newx), str(newy)
-#            if Globals.rightBound * self.zoom + self.w <= newx <= Globals.leftBound:
-#                self.camera[0] = newx
-#            if Globals.downBound * self.zoom + self.h <= newy <= Globals.upBound:
-#                self.camera[1] = newy
-#        elif self.trackCursor:
-#            self.mousePress.emit(1, (mouse.pos().x()-self.camera[0])/self.zoom, (mouse.pos().y()-self.camera[1])/self.zoom)
+            elif newy < Globals.downBound * self.zoom + self.h:
+                self.camera[1] = Globals.downBound * self.zoom + self.h
         
         self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
         #self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
@@ -464,7 +442,6 @@ class GLWidget(QGLWidget):
         self.movecam = False
 
     def wheelEvent(self, mouse):
-        return
         oldCoord = [mouse.pos().x(), mouse.pos().y()]
         oldCoord[0] *= float(1)/self.zoom
         oldCoord[1] *= float(1)/self.zoom
