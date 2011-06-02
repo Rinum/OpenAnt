@@ -20,15 +20,24 @@
 from GLWidget import *
 from PyQt4.QtCore import *
 
+from algo.astar import *
+import functools
+import collections
+
 class Ant():
     '''
     Class for generating ants
     '''
     def __init__(self, xpos, ypos, tiles, sprite):
-        #initialize ant position to (xpos,ypos)
+        # Current position.
         self.pos = [xpos * 32, ypos * 32]
+        # A path to go from self.pos to self.newPos using A*.
+        self.path = collections.deque()
+        # The end of the path.
         self.newPos = [xpos * 32, ypos * 32]
-        self.moving = False
+        # The next node in the path to move to.
+        self.nextPos = [-1, -1]
+        
         self.N = [0, 32, 32, 32]
         self.S = [32, 32, 32, 32]
         self.E = [64, 32, 32, 32]
@@ -49,36 +58,75 @@ class Ant():
         self.sprite = sprite
         
     def move(self):
-        x = self.newPos[0]
-        y = self.newPos[1]
-        
-        newDirection = ""
-        if self.pos[0] < x:
-            if self.tiles[(self.pos[0] + 32) / 32][(self.pos[1]) / 32].isPassable():
+        if len(self.path) or self.nextPos[0] != -1:
+            if (self.nextPos[0] == -1 or (self.pos[0] == self.nextPos[0] and self.pos[1] == self.nextPos[1])) and len(self.path):
+                _pos = self.path.pop()
+                self.nextPos[0] = _pos[0] * 32
+                self.nextPos[1] = _pos[1] * 32
+            newDirection = ""
+            if self.pos[0] < self.nextPos[0]:
                 self.pos[0] += self.speed
                 newDirection = "E"
-        elif self.pos[0] > x:
-            if self.tiles[self.pos[0] / 32][self.pos[1] / 32].isPassable():
+            if self.pos[0] > self.nextPos[0]:
                 self.pos[0] -= self.speed
                 newDirection = "W"
-        if self.pos[1] < y:
-            if self.tiles[(self.pos[0] + 26) / 32][(self.pos[1] + 32) / 32].isPassable():
+            if self.pos[1] < self.nextPos[1]:
                 self.pos[1] += self.speed
                 newDirection = "S" + newDirection
-        elif self.pos[1] > y:
-            if self.tiles[self.pos[0] / 32][self.pos[1] / 32].isPassable():
+            if self.pos[1] > self.nextPos[1]:
                 self.pos[1] -= self.speed
                 newDirection = "N" + newDirection
                 
-        if self.pos[0] == x and self.pos[1] == y:
+            if newDirection != "":
+                newDirection = "self." + newDirection
+                self.direction = eval(newDirection)
+                self.sprite.setTextureRect(self.direction) # Update sprite location.
+            self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
+        if self.pos[0] == self.nextPos[0] and self.pos[1] == self.nextPos[1] and len(self.path) == 0:
             self.queue = self.queue[1:] #Ant has reached its destination
-            
-        if newDirection != "":
-            newDirection = "self." + newDirection
-            self.direction = eval(newDirection)
-            self.sprite.setTextureRect(self.direction) # Update sprite location.
-        self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
-        
+
     def dig(self):
         print "WE CAN DIG!"
         self.queue = self.queue[1:] #Ant has dug
+        
+    # Find a path using A* Manhattan
+    def findPath(self):
+        start = [self.pos[0] / 32, self.pos[1] / 32]
+        end = [self.newPos[0] / 32, self.newPos[1] / 32]
+
+        map = self.getMap(start, end)
+        
+        a = AStar(map, MANHATTAN)
+        q = collections.deque()
+        
+        a.step(q)
+
+        self.path = a.path
+        
+        if not len(self.path):
+            self.queue = self.queue[1:]
+            return
+        
+        del self.path[0]
+        self.path.reverse()
+        
+        self.queue = self.queue[1:]
+        self.queue.append(self.move)
+        
+    def getMap(self, start, end):
+        """Generate a string representation of the map."""
+        output = ""
+
+        for i in range(Globals.mapheight):
+            for j in range(Globals.mapwidth):
+                if start[0] == j and start[1] == i:
+                    output += SOURCE
+                elif end[0] == j and end[1] == i:
+                    output += TARGET
+                elif self.tiles[j][i].isPassable():
+                    output += NORMAL
+                else:
+                    output += BLOCKED
+            output += "\n"
+
+        return output

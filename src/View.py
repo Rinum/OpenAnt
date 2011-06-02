@@ -25,7 +25,7 @@ import Globals
 import numpy
 
 class View():
-    def __init__(self, mapSlice, hidden=False):
+    def __init__(self, mapSlice, hidden = False):
         self.tiles = numpy.empty_like(mapSlice)
         self.width = len(mapSlice)
         self.height= len(mapSlice[0])

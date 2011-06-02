@@ -27,7 +27,13 @@ class WorkerAnt(Ant):
     def __init__(self, xpos, ypos, tiles, sprite):
         #initialize ant position to (xpos,ypos)
         self.pos = [xpos * 32, ypos * 32]
+        
+        self.path = []
+        
         self.newPos = [xpos * 32, ypos * 32]
+        
+        self.nextPos = [-1, -1]
+        
         self.moving = False
         self.N = [0, 32, 32, 32]
         self.S = [32, 32, 32, 32]

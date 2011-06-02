@@ -21,8 +21,6 @@
 #
 # By Oipo (kingoipo@gmail.com)
 
-import os
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
