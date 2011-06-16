@@ -124,14 +124,24 @@ class Map():
         x = (x/Globals.pixelsize)*Globals.pixelsize
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
-            self.ant.newPos = [x, y]
-            self.ant.queue.append(self.ant.findPath)
-            
             if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:
                 if self.ant.dig in self.ant.queue:
                     self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
                 self.ant.queue.append(self.ant.dig)
-            
+            else:
+                # Choose a tile that is passable and next to the tile clicked on.
+                while not self.tiles[x/32][y/32].isPassable():
+                    if self.ant.pos[0] < x:
+                        x -= 32
+                    elif self.ant.pos[0] > x:
+                        x += 32
+                    if self.ant.pos[1] < y:
+                        y -= 32
+                    elif self.ant.pos[1] > y:
+                        y += 32
+                self.ant.newPos = [x, y]
+                self.ant.queue.append(self.ant.findPath)
+
         self.lastButton = button
         self.lastClick = time()
         self.lastX = x;
