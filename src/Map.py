@@ -110,9 +110,8 @@ class Map():
             print "Cant spawn on", _x, _y, "because the tile isnt passable."
             _x = randint(0, 10)
             _y = randint(0, 10)
-        self.ant = Ant(_x, _y, self.tiles, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32])) #ants class
-        
-#        print self.ant.getMap([1, 1], [10, 10])
+        self.ant = WorkerAnt(_x, _y, self.tiles, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32])) # Ant class
+        print self.ant.speed
 
     def update(self):
         if len(self.ant.queue):
@@ -126,7 +125,6 @@ class Map():
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
             self.ant.newPos = [x, y]
-#            self.ant.queue.append(self.ant.move)
             self.ant.queue.append(self.ant.findPath)
             
             if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:

@@ -21,7 +21,6 @@ from GLWidget import *
 from PyQt4.QtCore import *
 
 from algo.astar import *
-import functools
 import collections
 
 class Ant():
@@ -65,18 +64,31 @@ class Ant():
                 self.nextPos[1] = _pos[1] * 32
             newDirection = ""
             if self.pos[0] < self.nextPos[0]:
-                self.pos[0] += self.speed
+                # This makes it so that your speed does not need to be a factor of 32 (or whatever the tile size is)
+                if self.nextPos[0] - self.pos[0] < self.speed:
+                    self.pos[0] += self.nextPos[0] - self.pos[0]
+                else:
+                    self.pos[0] += self.speed
                 newDirection = "E"
             if self.pos[0] > self.nextPos[0]:
-                self.pos[0] -= self.speed
+                if self.pos[0] - self.nextPos[0] < self.speed:
+                    self.pos[0] -= self.pos[0] - self.nextPos[0]
+                else:
+                    self.pos[0] -= self.speed
                 newDirection = "W"
             if self.pos[1] < self.nextPos[1]:
-                self.pos[1] += self.speed
+                if self.nextPos[1] - self.pos[1] < self.speed:
+                    self.pos[1] += self.nextPos[1] - self.pos[1]
+                else:
+                    self.pos[1] += self.speed
                 newDirection = "S" + newDirection
             if self.pos[1] > self.nextPos[1]:
-                self.pos[1] -= self.speed
+                if self.pos[1] - self.nextPos[1] < self.speed:
+                    self.pos[1] -= self.pos[1] - self.nextPos[1]
+                else:
+                    self.pos[1] -= self.speed
                 newDirection = "N" + newDirection
-                
+
             if newDirection != "":
                 newDirection = "self." + newDirection
                 self.direction = eval(newDirection)
