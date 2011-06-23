@@ -31,6 +31,7 @@ import Globals
 if Globals.musicOn:
     from PyQt4.phonon import *
     from MusPanel import *
+from LeftPanel import *
 
 from Map import *
 from Ants import *
@@ -63,7 +64,9 @@ class MainWindow(QMainWindow):
     def start(self):
         if Globals.musicOn:
             Globals.muspanel = MusPanel(self)
-
+            
+        LeftPanel(self)
+        
         #draw map... set view to ground
         Globals.view = self.map.generateMap()
         self.map.spawnAnts()
@@ -75,6 +78,10 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(['OpenAnt'])
+    # Set the default background color to a darker grey.
+    app.setPalette(QPalette(app.palette().button().color(), QColor(192, 192, 192)))
+    
+    QPalette.Window
     window = MainWindow()
     window.show()
     window.start()
