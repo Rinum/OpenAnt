@@ -111,7 +111,6 @@ class Map():
             _x = randint(0, 10)
             _y = randint(0, 10)
         self.ant = WorkerAnt(_x, _y, self.tiles, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32])) # Ant class
-        print self.ant.speed
 
     def update(self):
         if len(self.ant.queue):
@@ -140,6 +139,8 @@ class Map():
                     elif self.ant.pos[1] > y:
                         y += 32
                 self.ant.newPos = [x, y]
+                if self.ant.move in self.ant.queue:
+                    self.ant.queue.remove(self.ant.move)
                 self.ant.queue.append(self.ant.findPath)
 
         self.lastButton = button
