@@ -48,7 +48,7 @@ class Ant():
         self.sprite = sprite
         self.sprite.setTextureRect(self.S)
         self.direction = self.S
-        self.queue = []
+        self.queue = collections.deque()
         
         self.tiles = tiles
         self.speed = 4
@@ -95,11 +95,11 @@ class Ant():
                 self.sprite.setTextureRect(self.direction) # Update sprite location.
             self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
         if self.pos[0] == self.nextPos[0] and self.pos[1] == self.nextPos[1] and len(self.path) == 0:
-            self.queue = self.queue[1:] #Ant has reached its destination
+            self.queue.popleft() #Ant has reached its destination
 
     def dig(self):
         print "WE CAN DIG!"
-        self.queue = self.queue[1:] #Ant has dug
+        self.queue.popleft() #Ant has dug
         
     # Find a path using A* Manhattan
     def findPath(self):
@@ -108,7 +108,7 @@ class Ant():
         
         # Start and end are the same tile, dont need to move.
         if start == end:
-            self.queue = self.queue[1:]
+            self.queue.popleft()
             return
         
         map = self.getMap(start, end)
@@ -121,13 +121,13 @@ class Ant():
         self.path = a.path
         
         if not len(self.path):
-            self.queue = self.queue[1:]
+            self.queue.popleft()
             return
         
         del self.path[0]
         self.path.reverse()
         
-        self.queue = self.queue[1:]
+        self.queue.popleft()
         self.queue.append(self.move)
         
     def getMap(self, start, end):

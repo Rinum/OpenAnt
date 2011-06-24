@@ -20,6 +20,34 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from HealthWidget import *
+import Globals
+
+class PictureButton(QAbstractButton):
+    def __init__(self, parent = None, clickedCall = "", pressedCall = "", icon = Globals.datadir + "images/button.png"):
+        super(PictureButton, self).__init__()
+        self.icon = QImage(icon)
+        if not clickedCall == "":
+            clickedCall = "parent." + clickedCall
+            self.connect(self, SIGNAL("clicked()"), eval(clickedCall))
+        if not pressedCall == "":
+            pressedCall = "parent." + pressedCall
+            self.connect(self, SIGNAL("pressed()"), eval(pressedCall))
+        
+    def sizeHint(self):
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        return QSize(self.icon.width(), self.icon.height())
+        
+    def paintEvent(self, e):
+        qp = QPainter()
+        qp.begin(self)
+        self.drawButton(qp)
+        qp.end()
+        
+    def drawButton(self, qp):
+        qp.setPen(Qt.black)
+        qp.setBrush(Qt.SolidPattern)
+        rectangle = QRect(1, 1, self.icon.width(), self.icon.height())
+        qp.drawImage(rectangle, self.icon)
 
 class LeftPanel(QDockWidget):
     def __init__(self, mainWindow):
@@ -33,11 +61,24 @@ class LeftPanel(QDockWidget):
         # Create the layout.
         self.contents = QWidget(self)
         # Don't allow resizing closing or undocking.
-        self.setFeatures(QDockWidget.DockWidgetFeatures(QDockWidget.NoDockWidgetFeatures));
+        self.setFeatures(QDockWidget.DockWidgetFeatures(QDockWidget.NoDockWidgetFeatures))
         # Add the health view.
-        self.wid = HealthWidget()
         vbox = QVBoxLayout()
-        vbox.addWidget(self.wid)
+        hbox = QHBoxLayout()
+        
+        hbox.addWidget(PictureButton(self, "startSomething"))
+        hbox.addWidget(PictureButton(self, "startSomethingElse"))
+        vbox.addLayout(hbox)
+        vbox.addWidget(HealthWidget())
+        
         self.contents.setLayout(vbox)
         self.setWidget(self.contents)
         mainWindow.addDockWidget(Qt.LeftDockWidgetArea, self)
+        
+    def startSomething(self):
+        print "Button 1"
+        
+    def startSomethingElse(self):
+        print "Button 2"
+        
+        

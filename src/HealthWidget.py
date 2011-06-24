@@ -26,7 +26,7 @@ class HealthWidget(QWidget):
         self.initUI()
         
     def initUI(self):
-        self.setMinimumSize(100, 1)
+        self.setMinimumWidth(100)
         self.redHealth = 43.34;
         self.blackHealth = 10;
         self.yellowHealth = 55;
@@ -38,10 +38,10 @@ class HealthWidget(QWidget):
     def setRedHealth(self, val):
         self.redHealth = val;
         
-    def setBlackHealth(self):
+    def setBlackHealth(self, val):
         self.BlackHealth = val;
         
-    def setYellowHealth(self):
+    def setYellowHealth(self, val):
         self.YellowHealth = val;
         
     def paintEvent(self, e):

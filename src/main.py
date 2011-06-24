@@ -34,7 +34,7 @@ if Globals.musicOn:
 from LeftPanel import *
 
 from Map import *
-from Ants import *
+from Ant import *
 
 class MainWindow(QMainWindow):
     '''Wrapper class for...well, the game? Maybe this needs to be called the game engine then'''
