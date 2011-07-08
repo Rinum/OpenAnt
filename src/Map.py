@@ -79,6 +79,7 @@ class Map():
                 self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
+        self.occupiedTiles = {}
 
         #Waiting for mouse move signal
         Globals.glwidget.mousePress.connect(self.getCoords)
@@ -89,6 +90,11 @@ class Map():
         
         self.lastX = -1
         self.lastY = -1
+        
+        # Black colony
+        self.blackAnts = []
+        # Red colony
+        self.redAnts = []
         
     def generateMap(self):
         for x in range(Globals.mapwidth):
@@ -104,44 +110,53 @@ class Map():
         return View(self.tiles[:,:]) #tiles[every x, every y]
 
     def spawnAnts(self):
+        _x, _y = self.getSpawnLocation()
+        # Create the ants
+        self.yellowAnt = WorkerAnt(self,_x, _y, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32]))
+        self.occupiedTiles[(_x, _y)] = True
+        
+        _x, _y = self.getSpawnLocation()
+        self.blackAnts.append(WorkerAnt(self, _x, _y, Globals.glwidget.createImage(Globals.datadir + 'images/ants/blackant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32])))
+        self.occupiedTiles[(_x, _y)] = True
+
+    def getSpawnLocation(self):
         _x = randint(0, 10)
         _y = randint(0, 10)
-        while not self.tiles[_x][_y].isPassable():
-            print "Cant spawn on", _x, _y, "because the tile isnt passable."
+        while not (self.tiles[_x][_y].isPassable() and not self.occupiedTiles.has_key((_x, _y))):
             _x = randint(0, 10)
             _y = randint(0, 10)
-        self.ant = WorkerAnt(_x, _y, self.tiles, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32])) # Ant class
+        return _x, _y
 
     def update(self):
-        if len(self.ant.queue):
-            self.ant.queue[0]()
+        if len(self.yellowAnt.queue):
+            self.yellowAnt.queue[0]()
 
     def getCoords(self, button, x, y):
         '''
-        On click, move ant
+        On click, move ant.
         '''
         x = (x/Globals.pixelsize)*Globals.pixelsize
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
             if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:
-                if self.ant.dig in self.ant.queue:
-                    self.ant.queue.remove(self.ant.dig) #Cancel previous dig command
-                self.ant.queue.append(self.ant.dig)
+                if self.yellowAnt.dig in self.yellowAnt.queue:
+                    self.yellowAnt.queue.remove(self.yellowAnt.dig) #Cancel previous dig command
+                self.yellowAnt.queue.append(self.yellowAnt.dig)
             else:
                 # Choose a tile that is passable and next to the tile clicked on.
                 while not self.tiles[x/32][y/32].isPassable():
-                    if self.ant.pos[0] < x:
+                    if self.yellowAnt.pos[0] < x:
                         x -= 32
-                    elif self.ant.pos[0] > x:
+                    elif self.yellowAnt.pos[0] > x:
                         x += 32
-                    if self.ant.pos[1] < y:
+                    if self.yellowAnt.pos[1] < y:
                         y -= 32
-                    elif self.ant.pos[1] > y:
+                    elif self.yellowAnt.pos[1] > y:
                         y += 32
-                self.ant.newPos = [x, y]
-                if self.ant.move in self.ant.queue:
-                    self.ant.queue.remove(self.ant.move)
-                self.ant.queue.append(self.ant.findPath)
+                self.yellowAnt.newPos = [x, y]
+                if self.yellowAnt.move in self.yellowAnt.queue:
+                    self.yellowAnt.queue.remove(self.yellowAnt.move)
+                self.yellowAnt.queue.append(self.yellowAnt.findPath)
 
         self.lastButton = button
         self.lastClick = time()
@@ -150,3 +165,4 @@ class Map():
         
     def getTile(self, x, y):
         return self.tiles[x][y]
+    

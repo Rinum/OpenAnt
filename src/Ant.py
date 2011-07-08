@@ -27,7 +27,7 @@ class Ant():
     '''
     Class for generating ants
     '''
-    def __init__(self, xpos, ypos, tiles, sprite):
+    def __init__(self, parent, xpos, ypos, sprite):
         # Current position.
         self.pos = [xpos * 32, ypos * 32]
         # A path to go from self.pos to self.newPos using A*.
@@ -50,8 +50,9 @@ class Ant():
         self.direction = self.S
         self.queue = collections.deque()
         
-        self.tiles = tiles
         self.speed = 4
+        
+        self.parent = parent
         
     def setSprite(self, sprite):
         self.sprite = sprite
@@ -59,9 +60,20 @@ class Ant():
     def move(self):
         if len(self.path) or self.nextPos[0] != -1:
             if (self.nextPos[0] == -1 or (self.pos[0] == self.nextPos[0] and self.pos[1] == self.nextPos[1])) and len(self.path):
-                _pos = self.path.pop()
+                _pos = self.path.popleft()
                 self.nextPos[0] = _pos[0] * 32
                 self.nextPos[1] = _pos[1] * 32
+                if self.parent.occupiedTiles.has_key((_pos[0],_pos[1])):
+                    self.findAltPath(True)
+                    _pos = self.path.popleft()
+                    self.nextPos[0] = _pos[0] * 32
+                    self.nextPos[1] = _pos[1] * 32
+                    # Need to update the occupiedTiles dict even though we didnt move because the path changed.
+                    self.parent.occupiedTiles.pop((self.pos[0]/32,self.pos[1]/32))
+                    self.parent.occupiedTiles[(self.nextPos[0]/32,self.nextPos[1]/32)] = True
+                    return
+                self.parent.occupiedTiles.pop((self.pos[0]/32,self.pos[1]/32))
+                self.parent.occupiedTiles[(self.nextPos[0]/32,self.nextPos[1]/32)] = True
             newDirection = ""
             if self.pos[0] < self.nextPos[0]:
                 # This makes it so that your speed does not need to be a factor of 32 (or whatever the tile size is)
@@ -118,32 +130,68 @@ class Ant():
         
         a.step(q)
 
-        self.path = a.path
+        for elem in a.path:
+            self.path.append(elem)
         
         if not len(self.path):
             self.queue.popleft()
             return
         
-        del self.path[0]
-        self.path.reverse()
+        self.path.popleft()
         
         self.queue.popleft()
         self.queue.append(self.move)
+    
+    def findAltPath(self, avoid):
+        start = [self.pos[0] / 32, self.pos[1] / 32]
+        end = [self.newPos[0] / 32, self.newPos[1] / 32]
+        # Start and end are the same tile, dont need to move.
+        if start == end:
+            self.queue.popleft()
+            return
         
-    def getMap(self, start, end):
+        map = self.getMap(start, end, avoid)
+        
+        a = AStar(map, MANHATTAN)
+        q = collections.deque()
+        
+        a.step(q)
+        
+        self.path.clear()
+        for elem in a.path:
+            self.path.append(elem)
+        
+        if not len(self.path):
+            self.queue.popleft()
+            return
+        
+        self.path.popleft()
+        
+    def getMap(self, start, end, avoid = None):
         """Generate a string representation of the map."""
         output = ""
 
         for i in range(Globals.mapheight):
             for j in range(Globals.mapwidth):
-                if start[0] == j and start[1] == i:
-                    output += SOURCE
-                elif end[0] == j and end[1] == i:
-                    output += TARGET
-                elif self.tiles[j][i].isPassable():
-                    output += NORMAL
+                if avoid is None:
+                    if start[0] == j and start[1] == i:
+                        output += SOURCE
+                    elif end[0] == j and end[1] == i:
+                        output += TARGET
+                    elif self.parent.tiles[j][i].isPassable():
+                        output += NORMAL
+                    else:
+                        output += BLOCKED
                 else:
-                    output += BLOCKED
+                    if start[0] == j and start[1] == i:
+                        output += SOURCE
+                    elif end[0] == j and end[1] == i:
+                        output += TARGET
+                    elif self.parent.occupiedTiles.has_key((j,i)):
+                        output += BLOCKED
+                    elif self.parent.tiles[j][i].isPassable():
+                        output += NORMAL
+                    else:
+                        output += BLOCKED
             output += "\n"
-
         return output
