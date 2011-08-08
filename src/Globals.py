@@ -27,20 +27,20 @@ player = None
 overMap= None
 datadir = "../data/"
 pixelsize = 32
-mapheight = 32 + 32 #ground + underground
+mapheight = 32
 mapwidth = 64
 
 #nest coordinates
 blackNestX = 0
-blackNestY = -1 * pixelsize * (mapheight/2 + 1)
-redNestX = -1 * pixelsize * (mapwidth/2 + 1)
-redNestY = -1 * pixelsize * (mapheight/2 + 1)
+blackNestY = -1 * pixelsize * (mapheight + 1)
+redNestX = -1 * pixelsize * (mapwidth + 1)
+redNestY = -1 * pixelsize * (mapheight + 1)
 
 #camera bounds
 leftBound = 0
 rightBound = -1 * mapwidth * pixelsize
 upBound = 0
-downBound = -1 * (mapheight/2) * pixelsize
+downBound = -1 * mapheight * pixelsize
 
 #gui
 #nothing here yet

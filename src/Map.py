@@ -21,6 +21,7 @@ import Globals
 import numpy
 from View import View
 from WorkerAnt import *
+from YellowAnt import *
 
 from random import *
 from time import time
@@ -99,7 +100,7 @@ class Map():
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
-                if (y <= Globals.mapheight/2):
+                if (y <= Globals.mapheight):
                     if randint(0,10) > 8:
                         self.tiles[x][y] = choice(self.foliageTiles)
                     else:
@@ -112,11 +113,7 @@ class Map():
     def spawnAnts(self):
         _x, _y = self.getSpawnLocation()
         # Create the ants
-        self.yellowAnt = WorkerAnt(self,_x, _y, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32]))
-        self.occupiedTiles[(_x, _y)] = True
-        
-        _x, _y = self.getSpawnLocation()
-        self.blackAnts.append(WorkerAnt(self, _x, _y, Globals.glwidget.createImage(Globals.datadir + 'images/ants/blackant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32])))
+        self.yellowAnt = YellowAnt(self,_x, _y, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32]))
         self.occupiedTiles[(_x, _y)] = True
 
     def getSpawnLocation(self):
