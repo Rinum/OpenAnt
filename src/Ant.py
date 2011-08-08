@@ -129,6 +129,7 @@ class Ant():
         
         a.step(q)
 
+        self.path.clear()
         for elem in a.path:
             self.path.append(elem)
         
