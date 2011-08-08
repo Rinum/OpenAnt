@@ -22,6 +22,7 @@ from PyQt4.QtCore import *
 
 from algo.astar import *
 import collections
+from random import *
 
 class Ant():
     '''
@@ -54,60 +55,58 @@ class Ant():
         
         self.parent = parent
         
+        self.moving = False
+ 
     def setSprite(self, sprite):
         self.sprite = sprite
         
     def move(self):
-        if len(self.path) or self.nextPos[0] != -1:
-            if (self.nextPos[0] == -1 or (self.pos[0] == self.nextPos[0] and self.pos[1] == self.nextPos[1])) and len(self.path):
+        if len(self.path) or self.pos != self.nextPos:
+            if self.moving:
+                newDirection = ""
+                if self.pos[0] < self.nextPos[0]:
+                    # The following line makes it so that your speed does not need to be a factor of 32 (or whatever the tile size is).
+                    if self.nextPos[0] - self.pos[0] < self.speed:
+                        self.pos[0] += self.nextPos[0] - self.pos[0]
+                    else:
+                        self.pos[0] += self.speed
+                    newDirection = "E"
+                elif self.pos[0] > self.nextPos[0]:
+                    if self.pos[0] - self.nextPos[0] < self.speed:
+                        self.pos[0] -= self.pos[0] - self.nextPos[0]
+                    else:
+                        self.pos[0] -= self.speed
+                    newDirection = "W"
+                if self.pos[1] < self.nextPos[1]:
+                    if self.nextPos[1] - self.pos[1] < self.speed:
+                        self.pos[1] += self.nextPos[1] - self.pos[1]
+                    else:
+                        self.pos[1] += self.speed
+                    newDirection = "S" + newDirection
+                elif self.pos[1] > self.nextPos[1]:
+                    if self.pos[1] - self.nextPos[1] < self.speed:
+                        self.pos[1] -= self.pos[1] - self.nextPos[1]
+                    else:
+                        self.pos[1] -= self.speed
+                    newDirection = "N" + newDirection
+                
+                # Update sprite.
+                if newDirection != "":
+                    newDirection = "self." + newDirection
+                    self.direction = eval(newDirection)
+                    self.sprite.setTextureRect(self.direction) # Update sprite location.
+                    
+                if self.pos == self.nextPos:
+                    self.moving = False
+            else:
                 _pos = self.path.popleft()
                 self.nextPos[0] = _pos[0] * 32
                 self.nextPos[1] = _pos[1] * 32
-                if self.parent.occupiedTiles.has_key((_pos[0],_pos[1])):
-                    self.findAltPath(True)
-                    _pos = self.path.popleft()
-                    self.nextPos[0] = _pos[0] * 32
-                    self.nextPos[1] = _pos[1] * 32
-                    # Need to update the occupiedTiles dict even though we didnt move because the path changed.
-                    self.parent.occupiedTiles.pop((self.pos[0]/32,self.pos[1]/32))
-                    self.parent.occupiedTiles[(self.nextPos[0]/32,self.nextPos[1]/32)] = True
-                    return
-                self.parent.occupiedTiles.pop((self.pos[0]/32,self.pos[1]/32))
-                self.parent.occupiedTiles[(self.nextPos[0]/32,self.nextPos[1]/32)] = True
-            newDirection = ""
-            if self.pos[0] < self.nextPos[0]:
-                # This makes it so that your speed does not need to be a factor of 32 (or whatever the tile size is)
-                if self.nextPos[0] - self.pos[0] < self.speed:
-                    self.pos[0] += self.nextPos[0] - self.pos[0]
-                else:
-                    self.pos[0] += self.speed
-                newDirection = "E"
-            if self.pos[0] > self.nextPos[0]:
-                if self.pos[0] - self.nextPos[0] < self.speed:
-                    self.pos[0] -= self.pos[0] - self.nextPos[0]
-                else:
-                    self.pos[0] -= self.speed
-                newDirection = "W"
-            if self.pos[1] < self.nextPos[1]:
-                if self.nextPos[1] - self.pos[1] < self.speed:
-                    self.pos[1] += self.nextPos[1] - self.pos[1]
-                else:
-                    self.pos[1] += self.speed
-                newDirection = "S" + newDirection
-            if self.pos[1] > self.nextPos[1]:
-                if self.pos[1] - self.nextPos[1] < self.speed:
-                    self.pos[1] -= self.pos[1] - self.nextPos[1]
-                else:
-                    self.pos[1] -= self.speed
-                newDirection = "N" + newDirection
-
-            if newDirection != "":
-                newDirection = "self." + newDirection
-                self.direction = eval(newDirection)
-                self.sprite.setTextureRect(self.direction) # Update sprite location.
-            self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
-        if self.pos[0] == self.nextPos[0] and self.pos[1] == self.nextPos[1] and len(self.path) == 0:
-            self.queue.popleft() #Ant has reached its destination
+                self.moving = True
+        else:
+            self.queue.popleft() #Ant has reached its destination.
+        
+        self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
 
     def dig(self):
         print "WE CAN DIG!"
