@@ -1,28 +1,105 @@
 /*
- * main - starting point of FM
+ * Module for use in Oipo's Graphics Engine 2.0
  *
  * By Oipo (kingoipo@gmail.com)
  */
 
 #include <Python.h>
+#include <vector>
+#include <ext/hash_map>
+
+#define GL_GLEXT_PROTOTYPES 1
 
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
 #else
-    #include <GL/gl.h>
-
     #ifdef _WIN32
+        #undef GL_GLEXT_PROTOTYPES
+        #include <GL/gl.h>
+        #define WIN32_LEAN_AND_MEAN 1
         #include <windows.h>
         #include "glext.h"
         PFNGLBINDBUFFERPROC glBindBuffer = NULL;
+        PFNGLMULTIDRAWARRAYSPROC glMultiDrawArrays = NULL;
+    #else
+        #include <GL/gl.h>
     #endif
+#endif
+
+#ifdef DEBUG
+    #warning "DEBUG ENABLED, EXPECT PERFORMANCE LOSS"
+    #define PyTuple_GETITEM(a,b) PyTuple_GetItem(a,b)
+    #define PyList_GETITEM(a,b) PyList_GetItem(a,b)
+    #define PyInt_ASLONG(a) PyInt_AsLong(a)
+    #define PyLong_ASLONG(a) PyLong_AsLong(a)
+    #define PyFloat_ASDOUBLE(a) PyFloat_AsDouble(a)
+#else
+    #define PyTuple_GETITEM(a,b) PyTuple_GET_ITEM(a,b)
+    #define PyList_GETITEM(a,b) PyList_GET_ITEM(a,b)
+    #define PyInt_ASLONG(a) PyInt_AS_LONG(a)
+    #define PyFloat_ASDOUBLE(a) PyFloat_AS_DOUBLE(a)
+    #define PyLong_ASLONG(a) PyLong_AsLong(a) //there is no alternative to this function
+
 #endif
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
+using namespace std;
+using namespace __gnu_cxx;
+
 GLenum extension = GL_TEXTURE_RECTANGLE_ARB;
 
-int *texid, *offsets, VBO, stride, arrSize;
+class VBOEntry
+{
+    public:
+    unsigned int texid;
+    vector<GLint> offsetValues;
+
+    VBOEntry()
+    {
+        this->texid = 0;
+    }
+
+    VBOEntry(unsigned int texid, unsigned int offset)
+    {
+        this->texid = texid;
+        offsetValues.push_back(offset);
+    }
+
+    void addOffset(unsigned int offset)
+    {
+        offsetValues.push_back(offset);
+    }
+};
+
+typedef hash_map<unsigned int, VBOEntry> dict;
+
+int VBO, stride, valuesSize = -1;
+vector<dict> entries;
+GLint *firstValues;
+GLsizei *countValues;
+
+void resizeValues(int newSize)
+{
+    if(newSize <= valuesSize)
+        return;
+
+    if(valuesSize > 0)
+    {
+        delete[] firstValues;
+        delete[] countValues;
+    }
+
+    firstValues = new GLint[newSize];
+    countValues = new GLsizei[newSize];
+
+    for(int j = 0; j < newSize; j++)
+    {
+        countValues[j] = 4;
+    }
+
+    valuesSize = newSize;
+}
 
 static PyObject * glmod_drawTexture(PyObject *self, PyObject* args)
 {
@@ -59,7 +136,8 @@ static PyObject * glmod_drawTexture(PyObject *self, PyObject* args)
 
 static PyObject * glmod_drawVBO(PyObject *self, PyObject* args)
 {
-    int i, lastid = -1;
+    int i, j, k, x, lastid = -1;
+    
 
     glBindBuffer(GL_ARRAY_BUFFER_ARB, VBO);
     glTexCoordPointer(2, GL_FLOAT, stride, 0);
@@ -68,15 +146,21 @@ static PyObject * glmod_drawVBO(PyObject *self, PyObject* args)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    for(i = 0; i < arrSize; i++)
+    for(i = 0; i < entries.size(); i++)
     {
-        if(lastid != texid[i])
+        dict::iterator it = entries[i].begin();
+        while(it != entries[i].end())
         {
-            glBindTexture(extension, texid[i]);
-            lastid = texid[i];
-        }
+            VBOEntry* e = &((*it).second);
+            k = e->offsetValues.size();
+            glBindTexture(extension, e->texid);
 
-        glDrawArrays(GL_QUADS, offsets[i], 4);
+            for(int j = 0; j < k; j++)
+                firstValues[j] = e->offsetValues[j];
+
+            glMultiDrawArrays(GL_QUADS, firstValues, countValues, k);
+            it++;
+        }
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -88,66 +172,288 @@ static PyObject * glmod_drawVBO(PyObject *self, PyObject* args)
 
 static PyObject * glmod_setVBO(PyObject *self, PyObject* args)
 {
-    PyObject *tuple = PyTuple_GetItem(args, 0);
-    int i, x;
+    PyObject *tuple = PyTuple_GETITEM(args, 0);
+    int i, j;
+    unsigned int texid, offset;
+    PyObject *layer= NULL;
+    
+    entries.clear();
 
-    if(PyTuple_Size(tuple) % 2 != 0)
+    for(i = 0; i < PyTuple_Size(tuple); i++)
     {
-        printf("Failure with size: %i\n", PyTuple_Size(tuple));
-        return PyInt_FromLong(-1L);
-    }
-
-    free(texid);
-    free(offsets);
-
-    arrSize = (PyTuple_Size(tuple)-2)/2;
-    texid = (int*)malloc(arrSize*sizeof(int));
-    offsets = (int*)malloc(arrSize*sizeof(int));
-
-    VBO = PyInt_AsLong(PyTuple_GetItem(tuple, 0));
-    stride = PyInt_AsLong(PyTuple_GetItem(tuple, 1));
-
-    for(i = 2; i < PyTuple_Size(tuple); i++)
-    {
-        x = PyInt_AsLong(PyTuple_GetItem(tuple, i));
-        if(i % 2 == 0)
-            texid[(i-2)/2] = x;
-        else
-            offsets[(i-2)/2] = x;
+        entries.push_back(dict());
+        layer = PyTuple_GETITEM(tuple, i);
+        for(j = 0; j < PyTuple_Size(layer); j += 2)
+        {
+            texid = PyInt_ASLONG(PyTuple_GETITEM(layer, j));
+            offset = PyInt_ASLONG(PyTuple_GETITEM(layer, j+1));
+            
+            dict::iterator it = entries[i].find(texid);
+            if(it == entries[i].end())
+                entries[i][texid] = VBOEntry(texid, offset);
+            else
+            {
+                entries[i][texid].addOffset(offset);
+                if(entries[i][texid].offsetValues.size() >= valuesSize)
+                    resizeValues(entries[i][texid].offsetValues.size() + 5);
+            }
+        }
     }
 
     return PyInt_FromLong(0L);
 }
 
-static PyObject * glmod_generateTexture(PyObject *self, PyObject* args)
+static PyObject * glmod_insertVBOlayer(PyObject *self, PyObject* args)
 {
-    int texid, w, h, ok;
-    const char *pixels;
+    PyObject *tuple = PyTuple_GETITEM(args, 0);
+    int j;
+    unsigned int texid, offset, insertBeforeLayer;
 
-    ok = PyArg_ParseTuple(args, "iis", &w, &h, &pixels);
+    insertBeforeLayer = PyInt_ASLONG(PyTuple_GETITEM(tuple, 0));
+    
+    if(insertBeforeLayer >= entries.size())
+        entries.push_back(dict());
+    else
+        entries.insert(entries.begin() + insertBeforeLayer, dict());
 
-    texid = -1;
-    glGenTextures(1, &texid);
-    glBindTexture(extension, texid);
+    for(j = 1; j < PyTuple_Size(tuple); j += 2)
+    {
+        texid = PyInt_ASLONG(PyTuple_GETITEM(tuple, j));
+        offset = PyInt_ASLONG(PyTuple_GETITEM(tuple, j+1));
+        //printf("adding %i at %i on %i\r\n", texid, offset, insertBeforeLayer);
+        
+        dict::iterator it = entries[insertBeforeLayer].find(texid);
+        if(it == entries[insertBeforeLayer].end())
+            entries[insertBeforeLayer][texid] = VBOEntry(texid, offset);
+        else
+        {
+            entries[insertBeforeLayer][texid].addOffset(offset);
+            if(entries[insertBeforeLayer][texid].offsetValues.size() >= valuesSize)
+                resizeValues(entries[insertBeforeLayer][texid].offsetValues.size() + 5);
+        }
+    }
 
-    glTexParameteri(extension, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(extension, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(extension, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(extension, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    return PyInt_FromLong(0L);
+}
 
-    //'''possibly GL_COMPRESSED_RGBA_ARB as third parameter'''
-    glTexImage2D(extension, 0, GL_RGBA, w, h, 
-                 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+static PyObject * glmod_setVBOlayer(PyObject *self, PyObject* args)
+{
+    PyObject *tuple = PyTuple_GETITEM(args, 0);
+    int j;
+    unsigned int texid, offset, layer;
 
-    return PyInt_FromLong(texid);
+    layer = PyInt_ASLONG(PyTuple_GETITEM(tuple, 0));
+#ifdef DEBUG
+    if(layer > entries.size())
+    {
+        printf("SetLayer Layer too high\r\n");
+        return PyInt_FromLong(-1L);
+    }
+#endif
+    entries[layer].clear();
+
+    for(j = 1; j < PyTuple_Size(tuple); j += 2)
+    {
+        texid = PyInt_ASLONG(PyTuple_GETITEM(tuple, j));
+        offset = PyInt_ASLONG(PyTuple_GETITEM(tuple, j+1));
+        
+        dict::iterator it = entries[layer].find(texid);
+        if(it == entries[layer].end())
+            entries[layer][texid] = VBOEntry(texid, offset);
+        else
+        {
+            entries[layer][texid].addOffset(offset);
+            if(entries[layer][texid].offsetValues.size() >= valuesSize)
+                resizeValues(entries[layer][texid].offsetValues.size() + 5);
+        }
+    }
+
+    return PyInt_FromLong(0L);
+}
+
+static PyObject * glmod_addVBOentry(PyObject *self, PyObject* args)
+{
+    PyObject *tuple = PyTuple_GETITEM(args, 0);
+    int j;
+    unsigned int texid, offset, layer;
+
+    layer = PyInt_ASLONG(PyTuple_GETITEM(tuple, 0));
+#ifdef DEBUG
+    if(layer > entries.size())
+    {
+        printf("AddEntry Layer too high\r\n");
+        return PyInt_FromLong(-1L);
+    }
+#endif
+    for(j = 1; j < PyTuple_Size(tuple); j += 2)
+    {
+        texid = PyInt_ASLONG(PyTuple_GETITEM(tuple, j));
+        offset = PyInt_ASLONG(PyTuple_GETITEM(tuple, j+1));
+        
+        dict::iterator it = entries[layer].find(texid);
+        if(it == entries[layer].end())
+            entries[layer][texid] = VBOEntry(texid, offset);
+        else
+        {
+            entries[layer][texid].addOffset(offset);
+            if(entries[layer][texid].offsetValues.size() >= valuesSize)
+                resizeValues(entries[layer][texid].offsetValues.size() + 5);
+        }
+    }
+
+    return PyInt_FromLong(0L);
+}
+
+static PyObject * glmod_drawSelectionCircles(PyObject *self, PyObject* args)
+{
+    PyObject *dict = PyTuple_GETITEM(args, 0);
+    int i = 0; int r = 0;
+
+    PyObject *key, *values, *value, *test;
+    Py_ssize_t pos = 0;
+
+    while (PyDict_Next(dict, &pos, &key, &values)) {
+        for(i = 0; i < PyList_Size(values); i++) 
+        {
+            value = PyList_GETITEM(values, i);
+            glLineWidth(3);
+            glColor3f(0.0, 1.0, 0.0);
+            glDisable(extension);
+            glBegin(GL_LINE_LOOP);
+            double x = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 0));
+            double y = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 1));
+	        double rad = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 2));
+            for (r = 0; r < 360; r = r + 3)
+            {
+                glVertex2f(x + cos(r*0.01745329) * rad, y + sin(r*0.01745329) * rad);
+            }
+            glEnd();
+            glEnable(extension);
+            glColor3f(1.0, 1.0, 1.0);
+        }
+    }
+
+    return PyInt_FromLong(0L);
+}
+
+static PyObject * glmod_drawRectangles(PyObject *self, PyObject* args)
+{
+    PyObject *dict = PyTuple_GETITEM(args, 0);
+    int i = 0;
+
+    PyObject *key, *values, *value, *test;
+    Py_ssize_t pos = 0;
+
+    while (PyDict_Next(dict, &pos, &key, &values)) {
+        for(i = 0; i < PyList_Size(values); i++) 
+        {
+            value = PyList_GETITEM(values, i);
+
+            double x = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 0));
+            double y = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 1));
+            double w = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 2));
+            double h = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 3));
+            double r = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 4));
+            double g = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 5));
+            double b = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 6));
+
+            glLineWidth(2);
+            glColor3f(r, g, b);
+            glDisable(extension);
+            glBegin(GL_LINE_LOOP);
+
+            glVertex2d(x, y);
+            glVertex2d(w, y);
+            glVertex2d(w, h);
+            glVertex2d(x, h);
+
+            glEnd();
+            glEnable(extension);
+            glColor3f(1.0, 1.0, 1.0);
+        }
+    }
+
+    return PyInt_FromLong(0L);
+}
+
+static PyObject * glmod_drawLines(PyObject *self, PyObject* args)
+{
+    PyObject *dict = PyTuple_GETITEM(args, 0);
+    int prevthickness = 0, thickness, i = 0;
+    
+    PyObject *key, *values, *value, *test;
+    Py_ssize_t pos = 0;
+
+    glDisable(extension);
+
+    glBegin(GL_LINES);
+    while (PyDict_Next(dict, &pos, &key, &values)) {
+        thickness = PyInt_ASLONG(key);
+        if(thickness != prevthickness)
+        {
+            glEnd();
+            glLineWidth(thickness);
+            prevthickness = thickness;
+            glBegin(GL_LINES);
+        }
+#ifdef DEBUG
+        if(!PyList_Check(values))
+        {
+            printf("values not a list\r\n");
+            return PyInt_FromLong(0L);
+        }
+#endif
+        for(i = 0; i < PyList_Size(values); i++)
+        {
+            value = PyList_GETITEM(values, i);
+#ifdef DEBUG
+            if(!PyTuple_Check(value))
+            {
+                printf("value not a tuple\r\n");
+                return PyInt_FromLong(0L);
+            }
+            if(!PyFloat_Check(PyTuple_GETITEM(value, 0)))
+            {
+                printf("x not a tuple\r\n");
+                return PyInt_FromLong(0L);
+            }
+#endif
+            double x = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 0));
+            double y = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 1));
+            double w = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 2));
+            double h = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 3));
+
+            double r = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 4));
+            double g = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 5));
+            double b = PyFloat_ASDOUBLE(PyTuple_GETITEM(value, 6));
+
+            glColor3f(r, g, b);
+
+            glVertex2d(x, y);
+            glVertex2d(w, h);
+        }
+    }
+    glEnd();
+
+    glEnable(extension);
+    glColor3f(1.0, 1.0, 1.0);
+
+    return PyInt_FromLong(0L);
+}
+
+static PyObject * glmod_initVBO(PyObject *self, PyObject* args)
+{
+    int ok;
+    ok = PyArg_ParseTuple(args, "ii", &VBO, &stride);
+
+    if(!ok)
+        return PyInt_FromLong(-1L); //Parse error
+    return PyInt_FromLong(0L);
 }
 
 static PyObject * glmod_init(PyObject *self, PyObject* args)
 {
     int ok;
-
-    texid = NULL;
-    offsets = NULL;
 
     ok = PyArg_ParseTuple(args, "i", &extension);
 
@@ -158,24 +464,28 @@ static PyObject * glmod_init(PyObject *self, PyObject* args)
     glBindBuffer = (PFNGLBINDBUFFERARBPROC)wglGetProcAddress("glBindBufferARB");
     if(glBindBuffer == NULL)
         return PyInt_FromLong(-2L); //Init went ok, but couldn't get glBindBuffer
+    glMultiDrawArrays = (PFNGLMULTIDRAWARRAYSPROC)wglGetProcAddress("glMultiDrawArraysEXT");
+    if(glMultiDrawArrays == NULL)
+        return PyInt_FromLong(-2L); //Init went ok, but couldn't get glMultiDrawArrays
 #endif
 
-    return PyInt_FromLong(0L);
-}
+    resizeValues(4);
 
-static PyObject * glmod_clear(PyObject *self, PyObject* args)
-{
-    glClear(GL_COLOR_BUFFER_BIT);
     return PyInt_FromLong(0L);
 }
 
 static PyMethodDef GLModMethods[] = {
     {"drawTexture",  glmod_drawTexture, METH_VARARGS, "draw a texture"},
     {"drawVBO",  glmod_drawVBO, METH_VARARGS, "draw the list of texids with VBO"},
-    {"setVBO",  glmod_setVBO, METH_VARARGS, "set the list of texids"},
-    {"generateTexture",  glmod_generateTexture, METH_VARARGS, "generate texture id"},
-    {"clear",  glmod_clear, METH_VARARGS, "clear"},
+    {"setVBO",  glmod_setVBO, METH_VARARGS, "erase & set the list of VBO entries"},
+    {"insertVBOlayer",  glmod_insertVBOlayer, METH_VARARGS, "add a layer of VBO entries"},
+    {"setVBOlayer",  glmod_setVBOlayer, METH_VARARGS, "erase & set a layer of VBO entries"},
+    {"addVBOentry",  glmod_addVBOentry, METH_VARARGS, "add an entry to a layer"},
+    {"drawLines",  glmod_drawLines, METH_VARARGS, "draws lines from a dict"},
+    {"drawSelectionCircles",  glmod_drawSelectionCircles, METH_VARARGS, "draws selection circles from a dict"},
+    {"drawRectangles",  glmod_drawRectangles, METH_VARARGS, "draws rectangles from a dict"},
     {"init",  glmod_init, METH_VARARGS, "init"},
+    {"initVBO",  glmod_initVBO, METH_VARARGS, "initVBO"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
