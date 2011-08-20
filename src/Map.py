@@ -151,8 +151,9 @@ class Map():
                     elif self.yellowAnt.pos[1] > y:
                         y += 32
                 self.yellowAnt.newPos = [x, y]
-                if self.yellowAnt.move in self.yellowAnt.queue:
-                    self.yellowAnt.queue.remove(self.yellowAnt.move)
+                if self.yellowAnt.move in self.yellowAnt.queue: #User decided to perform a different action sequence
+                    self.yellowAnt.queue.clear() #Clear queued actions
+                    self.yellowAnt.path.clear() #Clear path so ant can move to new location
                 self.yellowAnt.queue.append(self.yellowAnt.findPath)
 
         self.lastButton = button
