@@ -110,6 +110,9 @@ class Ant():
 
     def dig(self):
         print "WE CAN DIG!"
+        x = self.pos[0] - 32
+        y = self.pos[1] - 32
+        Globals.glwidget.createImage(Globals.datadir + 'images/special/nest.png', 1, [1, 1, -1, -1], [ x, y, 96, 96]);
         self.queue.popleft() #Ant has dug
         
     # Find a path using A* Manhattan
