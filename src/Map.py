@@ -121,9 +121,9 @@ class Map():
         self.yellowAnt = YellowAnt(self,_x, _y, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32]))
         self.occupiedTiles[(_x, _y)] = True
 
-    def getSpawnLocation(self):
-        _x = randint(0, 10)
-        _y = randint(0, 10)
+    def getSpawnLocation(self, rangeX = 10, rangeY = 10):
+        _x = randint(0, rangeX)
+        _y = randint(0, rangeY)
         while not (self.tiles[_x][_y].isPassable() and not self.occupiedTiles.has_key((_x, _y))):
             _x = randint(0, 10)
             _y = randint(0, 10)
@@ -131,7 +131,7 @@ class Map():
 
     def spawnOneFood(self):
 		
-	x, y = self.getSpawnLocation()
+	x, y = self.getSpawnLocation(Globals.mapwidth, Globals.mapheight)
 
 	self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
