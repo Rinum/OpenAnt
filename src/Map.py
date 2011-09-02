@@ -22,6 +22,7 @@ import numpy
 from View import View
 from WorkerAnt import *
 from YellowAnt import *
+from Food import *
 
 from random import *
 from time import time
@@ -97,6 +98,10 @@ class Map():
         # Red colony
         self.redAnts = []
         
+
+	# Food
+	self.pos_food = {}
+
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
@@ -124,9 +129,25 @@ class Map():
             _y = randint(0, 10)
         return _x, _y
 
+    def spawnOneFood(self):
+		
+	x, y = self.getSpawnLocation()
+
+	self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
+        self.occupiedTiles[(x, y)] = True
+
+		
+    def removeOneFood(self):
+	###remove image, take out of map's food stack, take off of occupiedTiles
+	pass
+ 
     def update(self):
         if len(self.yellowAnt.queue):
             self.yellowAnt.queue[0]()
+
+	#if there are less than 20 pieces of food...
+	if len(self.pos_food.keys()) < 20:
+		self.spawnOneFood()
 
     def getCoords(self, button, x, y):
         '''
