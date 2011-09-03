@@ -204,16 +204,16 @@ class Map():
         shiftY = 0
         loop = False
 
-        if x<=(0.1*w) and Globals.glwidget.camera[0] + 16 <= 0:
+        if x<=(0.1*w) and Globals.glwidget.camera[0] + 16 <= Globals.leftBound:
             shiftX = 16
             loop = True
-        if x>=(w - 0.1*w) and Globals.glwidget.camera[0] - 16 >= Globals.mapwidth*-24 +w:
+        if x>=(w - 0.1*w) and Globals.glwidget.camera[0] - 16 >= Globals.rightBound +w:
             shiftX = -16
             loop = True
-        if y<=(0.1*h) and Globals.glwidget.camera[1] + 16 <= 0:
+        if y<=(0.1*h) and Globals.glwidget.camera[1] + 16 <= Globals.upBound:
             shiftY = 16
             loop = True
-        if y>=(h - 0.1*h) and Globals.glwidget.camera[1] - 16 >= Globals.mapheight*-24 +h:
+        if y>=(h - 0.1*h) and Globals.glwidget.camera[1] - 16 >= Globals.downBound +h:
             shiftY = -16
             loop = True
      

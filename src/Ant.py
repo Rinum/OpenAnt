@@ -135,6 +135,10 @@ class Ant():
         print "Enter Nest"
         Globals.glwidget.camera[0] = Globals.blackNestX
         Globals.glwidget.camera[1] = Globals.blackNestY
+        Globals.upBound = Globals.blackNestY
+        Globals.downBound *= 2
+        Globals.leftBound = Globals.blackNestX
+        Globals.rightBound = Globals.redNestX
         self.queue.popleft()
         
     def doubleClick(self):
