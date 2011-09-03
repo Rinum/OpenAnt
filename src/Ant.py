@@ -94,7 +94,7 @@ class Ant():
                 if newDirection != "":
                     newDirection = "self." + newDirection
                     self.direction = eval(newDirection)
-                    self.sprite.setTextureRect(self.direction) # Update sprite location.
+                    self.sprite.setTextureRect(self.direction) # Update sprite direction.
                     
                 if self.pos == self.nextPos:
                     self.moving = False
@@ -139,6 +139,13 @@ class Ant():
         Globals.downBound *= 2
         Globals.leftBound = Globals.blackNestX
         Globals.rightBound = Globals.redNestX
+        
+        self.direction = self.S
+        self.sprite.setTextureRect(self.direction) # Update sprite direction.
+        self.pos[0] = Globals.blackNestX
+        self.pos[1] = Globals.blackNestY
+        self.sprite.setDrawRect([self.pos[0] * -1, self.pos[1] * -1, 32, 32])
+        
         self.queue.popleft()
         
     def doubleClick(self):
