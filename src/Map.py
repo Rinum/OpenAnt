@@ -85,7 +85,7 @@ class Map():
                 else:
                     self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
 
-        self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
+        self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight * 2], dtype=object)
         Globals.glwidget.mouseMove.connect(self.moveCamera)
         self.occupiedTiles = {}
 
@@ -112,7 +112,7 @@ class Map():
         
     def generateMap(self):
         for x in range(Globals.mapwidth):
-            for y in range(Globals.mapheight):
+            for y in range(Globals.mapheight * 2):
                 if (y <= Globals.mapheight):
                     if randint(0,10) > 8:
                         self.tiles[x][y] = choice(self.foliageTiles)
