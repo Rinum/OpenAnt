@@ -109,11 +109,27 @@ class Ant():
         self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
 
     def dig(self):
-        print "WE CAN DIG!"
-        x = self.pos[0] - 32
-        y = self.pos[1] - 32
-        Globals.glwidget.createImage(Globals.datadir + 'images/special/nest.png', 1, [1, 1, -1, -1], [ x, y, 96, 96]);
-        self.queue.popleft() #Ant has dug
+        #check if Ant Hill can be built
+        diggable = 1
+        for i in range(-2,3):
+                for j in range(-2,3):
+                    if(self.parent.antHills[(self.pos[0]/32)+i][(self.pos[1]/32)+j] > 0):
+                        diggable = 0
+    
+        if(diggable):
+            print "We Can Dig!"
+            x = self.pos[0] - 32
+            y = self.pos[1] - 32
+            Globals.glwidget.createImage(Globals.datadir + 'images/special/nest.png', 1, [1, 1, -1, -1], [ x, y, 96, 96]);
+            #Prevent overlapping anthills
+            for i in range(-2,3):
+                for j in range(-2,3):
+                    self.parent.antHills[(self.pos[0]/32)+i][(self.pos[1]/32)+j] = 1;
+            #Actual Entrance
+            self.parent.antHills[self.pos[0]/32][self.pos[1]/32] = 2;
+        else:
+            print "You Can't Dig There!"
+        self.queue.popleft()
         
     # Find a path using A* Manhattan
     def findPath(self):

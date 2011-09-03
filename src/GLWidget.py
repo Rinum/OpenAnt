@@ -53,7 +53,7 @@ class GLWidget(QGLWidget):
     def __init__(self, parent):
         QGLWidget.__init__(self, parent)
 
-        self.setMinimumSize(320, 240)
+        self.setMinimumSize(640, 480)
         self.w = 640
         self.h = 480
         self.images = dict()

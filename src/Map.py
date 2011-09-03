@@ -98,10 +98,12 @@ class Map():
         # Red colony
         self.redAnts = []
         
+        # Food
+        self.pos_food = {}
 
-	# Food
-	self.pos_food = {}
-
+        # Ant Hills
+        self.antHills = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=int) # [X Coord][Y Coord] = Type (0:Free,1:Ant Hill,2:Nest Entry)
+        
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
@@ -129,17 +131,15 @@ class Map():
             _y = randint(0, 10)
         return _x, _y
 
-    def spawnOneFood(self):
-		
-	x, y = self.getSpawnLocation()
+    def spawnOneFood(self):		
+        x, y = self.getSpawnLocation()
 
-	self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
+        self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
-
 		
     def removeOneFood(self):
-	###remove image, take out of map's food stack, take off of occupiedTiles
-	pass
+        ###remove image, take out of map's food stack, take off of occupiedTiles
+        pass
  
     def update(self):
         if len(self.yellowAnt.queue):
