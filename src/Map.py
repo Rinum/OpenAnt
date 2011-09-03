@@ -66,21 +66,24 @@ class Map():
         #Populate list of ground tiles
         dirList = os.listdir(self.groundTilesPath)
         for fname in dirList:
-            self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
+            if(fname != "Thumbs.db"):
+                self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
 
         #Populate list of underground tiles
         dirList = os.listdir(self.undergroundTilesPath)
         for fname in dirList:
-            if (fname == "underground1.png"):#underground2.png is for tunnels
-                self.undergroundTiles.append(Tile(self.undergroundTilesPath + fname, True))
+            if(fname != "Thumbs.db"):
+                if (fname == "underground1.png"):#underground2.png is for tunnels
+                    self.undergroundTiles.append(Tile(self.undergroundTilesPath + fname, True))
 
         #Populate list of foliage tiles
         dirList = os.listdir(self.foliageTilesPath)
         for fname in dirList:
-            if "rock" in fname:
-                self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
-            else:
-                self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
+            if(fname != "Thumbs.db"):
+                if "rock" in fname:
+                    self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
+                else:
+                    self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
         Globals.glwidget.mouseMove.connect(self.moveCamera)
@@ -160,9 +163,9 @@ class Map():
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
             if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:
-                if self.yellowAnt.dig in self.yellowAnt.queue:
-                    self.yellowAnt.queue.remove(self.yellowAnt.dig) #Cancel previous dig command
-                self.yellowAnt.queue.append(self.yellowAnt.dig)
+                if self.yellowAnt.doubleClick in self.yellowAnt.queue:
+                    self.yellowAnt.queue.remove(self.yellowAnt.doubleClick) #Cancel previous dig command
+                self.yellowAnt.queue.append(self.yellowAnt.doubleClick)
             else:
                 # Choose a tile that is passable and next to the tile clicked on.
                 while not self.tiles[x/32][y/32].isPassable():

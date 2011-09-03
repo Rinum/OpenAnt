@@ -130,6 +130,9 @@ class Ant():
         else:
             print "You Can't Dig There!"
         self.queue.popleft()
+
+    def doubleClick(self):
+        self.dig()
         
     # Find a path using A* Manhattan
     def findPath(self):
