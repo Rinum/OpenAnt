@@ -580,7 +580,7 @@ class GLWidget(QGLWidget):
                 self.camera[1] = Globals.downBound * self.zoom + self.h
         
         self.lastMousePos = [mouse.pos().x(), mouse.pos().y()]
-        #self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
+        self.mouseMove.emit(mouse.pos().x(), mouse.pos().y())
 
         mouse.accept()
 

@@ -27,6 +27,8 @@ from Food import *
 from random import *
 from time import time
 
+from threading import Timer
+
 from const.constants import *
 
 class Tile():
@@ -81,6 +83,7 @@ class Map():
                 self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
+        Globals.glwidget.mouseMove.connect(self.moveCamera)
         self.occupiedTiles = {}
 
         #Waiting for mouse move signal
@@ -185,3 +188,36 @@ class Map():
     def getTile(self, x, y):
         return self.tiles[x][y]
     
+    def moveCamera(self,x,y):
+        try: # We try and cancel any previous camera movements.
+            self.t.cancel()
+        except:
+            pass
+
+        w = Globals.glwidget.w #viewport width
+        h = Globals.glwidget.h #viewport height
+
+        shiftX = 0
+        shiftY = 0
+        loop = False
+
+        if x<=(0.1*w) and Globals.glwidget.camera[0] + 16 <= 0:
+            shiftX = 16
+            loop = True
+        if x>=(w - 0.1*w) and Globals.glwidget.camera[0] - 16 >= Globals.mapwidth*-24 +w:
+            shiftX = -16
+            loop = True
+        if y<=(0.1*h) and Globals.glwidget.camera[1] + 16 <= 0:
+            shiftY = 16
+            loop = True
+        if y>=(h - 0.1*h) and Globals.glwidget.camera[1] - 16 >= Globals.mapheight*-24 +h:
+            shiftY = -16
+            loop = True
+     
+ 
+        Globals.glwidget.camera[0] += shiftX
+        Globals.glwidget.camera[1] += shiftY
+
+        if loop == True:
+            self.t = Timer(0.05, self.moveCamera, (x, y))
+            self.t.start()
