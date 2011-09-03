@@ -148,9 +148,9 @@ class Map():
         if len(self.yellowAnt.queue):
             self.yellowAnt.queue[0]()
 
-	#if there are less than 20 pieces of food...
-	if len(self.pos_food.keys()) < 20:
-		self.spawnOneFood()
+        #if there are less than 20 pieces of food...
+        if len(self.pos_food.keys()) < 20:
+            self.spawnOneFood()
 
     def getCoords(self, button, x, y):
         '''
