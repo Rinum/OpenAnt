@@ -27,6 +27,8 @@ from Food import *
 from random import *
 from time import time
 
+from threading import Timer
+
 from const.constants import *
 
 class Tile():
@@ -81,6 +83,7 @@ class Map():
                 self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
 
         self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
+        Globals.glwidget.mouseMove.connect(self.moveCamera)
         self.occupiedTiles = {}
 
         #Waiting for mouse move signal
@@ -98,10 +101,12 @@ class Map():
         # Red colony
         self.redAnts = []
         
+        # Food
+        self.pos_food = {}
 
-	# Food
-	self.pos_food = {}
-
+        # Ant Hills
+        self.antHills = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=int) # [X Coord][Y Coord] = Type (0:Free,1:Ant Hill,2:Nest Entry)
+        
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight):
@@ -129,17 +134,15 @@ class Map():
             _y = randint(0, 10)
         return _x, _y
 
-    def spawnOneFood(self):
-		
-	x, y = self.getSpawnLocation(Globals.mapwidth, Globals.mapheight)
+    def spawnOneFood(self):		
+        x, y = self.getSpawnLocation(Globals.mapwidth, Globals.mapheight)
 
-	self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
+        self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
-
 		
     def removeOneFood(self):
-	###remove image, take out of map's food stack, take off of occupiedTiles
-	pass
+        ###remove image, take out of map's food stack, take off of occupiedTiles
+        pass
  
     def update(self):
         if len(self.yellowAnt.queue):
@@ -185,3 +188,36 @@ class Map():
     def getTile(self, x, y):
         return self.tiles[x][y]
     
+    def moveCamera(self,x,y):
+        try: # We try and cancel any previous camera movements.
+            self.t.cancel()
+        except:
+            pass
+
+        w = Globals.glwidget.w #viewport width
+        h = Globals.glwidget.h #viewport height
+
+        shiftX = 0
+        shiftY = 0
+        loop = False
+
+        if x<=(0.1*w) and Globals.glwidget.camera[0] + 16 <= 0:
+            shiftX = 16
+            loop = True
+        if x>=(w - 0.1*w) and Globals.glwidget.camera[0] - 16 >= Globals.mapwidth*-24 +w:
+            shiftX = -16
+            loop = True
+        if y<=(0.1*h) and Globals.glwidget.camera[1] + 16 <= 0:
+            shiftY = 16
+            loop = True
+        if y>=(h - 0.1*h) and Globals.glwidget.camera[1] - 16 >= Globals.mapheight*-24 +h:
+            shiftY = -16
+            loop = True
+     
+ 
+        Globals.glwidget.camera[0] += shiftX
+        Globals.glwidget.camera[1] += shiftY
+
+        if loop == True:
+            self.t = Timer(0.05, self.moveCamera, (x, y))
+            self.t.start()

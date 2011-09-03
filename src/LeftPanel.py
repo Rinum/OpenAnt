@@ -64,21 +64,62 @@ class LeftPanel(QDockWidget):
         self.setFeatures(QDockWidget.DockWidgetFeatures(QDockWidget.NoDockWidgetFeatures))
         # Add the health view.
         vbox = QVBoxLayout()
-        hbox = QHBoxLayout()
+        hbox1 = QHBoxLayout()
+        hbox2 = QHBoxLayout()
+        hbox3 = QHBoxLayout()
+        hbox4 = QHBoxLayout()
+        hbox5 = QHBoxLayout()
         
-        hbox.addWidget(PictureButton(self, "startSomething"))
-        hbox.addWidget(PictureButton(self, "startSomethingElse"))
-        vbox.addLayout(hbox)
+        hbox1.addWidget(PictureButton(self, "help","",Globals.datadir + "images/UI/help.png"))
+        hbox1.addWidget(PictureButton(self, "experiment","",Globals.datadir + "images/UI/experiment.png"))
+        vbox.addLayout(hbox1)
+        
+        hbox2.addWidget(PictureButton(self, "map","",Globals.datadir + "images/UI/map.png"))
+        vbox.addLayout(hbox2)
+        
+        hbox3.addWidget(PictureButton(self, "blackNest","",Globals.datadir + "images/UI/blackNest.png"))
+        hbox3.addWidget(PictureButton(self, "redNest","",Globals.datadir + "images/UI/redNest.png"))
+        vbox.addLayout(hbox3)
+        
+        hbox4.addWidget(PictureButton(self, "yellowAnt","",Globals.datadir + "images/UI/yellowAnt.png"))
+        hbox4.addWidget(PictureButton(self, "spider","",Globals.datadir + "images/UI/spider.png"))
+        vbox.addLayout(hbox4)
+        
+        hbox5.addWidget(PictureButton(self, "blackQueen","",Globals.datadir + "images/UI/blackQueen.png"))
+        hbox5.addWidget(PictureButton(self, "redQueen","",Globals.datadir + "images/UI/redQueen.png"))
+        vbox.addLayout(hbox5)
+        
         vbox.addWidget(HealthWidget())
         
         self.contents.setLayout(vbox)
         self.setWidget(self.contents)
         mainWindow.addDockWidget(Qt.LeftDockWidgetArea, self)
         
-    def startSomething(self):
-        print "Button 1"
+    def help(self):
+        print "Help!"
         
-    def startSomethingElse(self):
-        print "Button 2"
+    def experiment(self):
+        print "Experiment!"
+
+    def map(self):
+        print "Map!"
+        
+    def blackNest(self):
+        print "Black Ant Nest!"
+    
+    def redNest(self):
+        print "Red Ant Nest!"
+        
+    def yellowAnt(self):
+        print "Yellow Ant!"
+        
+    def spider(self):
+        print "Spider! Kill it with fire!"
+        
+    def blackQueen(self):
+        print "Black Ant's Queen!"
+        
+    def redQueen(self):
+        print "Red Ant's Queen!"
         
         
