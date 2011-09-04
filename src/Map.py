@@ -136,9 +136,25 @@ class Map():
             _x = randint(0, 10)
             _y = randint(0, 10)
         return _x, _y
+    
+    def getSpawnLocationDistribution(self, distCenter = (10, 10)):
+        '''Used for food spawning, possibly spawning new ants?''' 
+        
+        while True:
+            x, y = numpy.random.normal(distCenter[0], 4), numpy.random.normal(distCenter[1], 4)
+            x, y = int(x), int(y)
+            #check if number is even in map...
+            if x in self.tiles:
+                if y in self.tiles[x]:
+                    if (self.tiles[x][y].isPassable() and not self.occupiedTiles.has_key((x, y))):
+                        return x, y
 
-    def spawnOneFood(self):		
-        x, y = self.getSpawnLocation()
+    def spawnOneFood(self, randomOrigin = (0, 0)):		
+        
+        if randomOrigin == (0, 0):
+            x, y = self.getSpawnLocation()
+        else:
+            x, y = self.getSpawnLocationDistribution(randomOrigin)
 
         self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
