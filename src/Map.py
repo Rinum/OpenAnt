@@ -143,7 +143,7 @@ class Map():
         self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
 		
-    def removeOneFood(self):
+    def removeOneFood(self, foodLocation):
         ###remove image, take out of map's food stack, take off of occupiedTiles
         foodParticle = self.pos_food[foodLocation]
         Globals.glwidget.deleteImage(foodParticle.sprite) #delete the image (gfx)

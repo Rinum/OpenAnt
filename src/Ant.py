@@ -28,6 +28,7 @@ class Ant():
     '''
     Class for generating ants
     '''
+
     def __init__(self, parent, xpos, ypos, sprite):
         # Current position.
         self.pos = [xpos * 32, ypos * 32]
@@ -56,10 +57,18 @@ class Ant():
         self.parent = parent
         
         self.moving = False
+        self.hasFood = False
  
     def setSprite(self, sprite):
         self.sprite = sprite
         
+    def switchSprite(self, imgLocation):
+        '''Not sure if I should use the setSprite Command above'''
+        
+        #delete previous sprite/add new one
+        Globals.glwidget.deleteImage(self.sprite)
+        self.sprite = Globals.glwidget.createImage(imgLocation, 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
+
     def move(self):
         if len(self.path) or self.pos != self.nextPos:
             if self.moving:
@@ -148,10 +157,22 @@ class Ant():
         
         self.queue.popleft()
         
+    def posToTileCoords(self):
+        return (self.pos[0]/32, self.pos[1]/32)
+
+    def pickFoodUp(self, antLocationTile):
+        self.parent.removeOneFood(antLocationTile)
+        self.switchSprite(Globals.datadir + 'images/ants/yellowant_food.png')
+        self.queue.popleft() #I hope this is right...
+
+
     def doubleClick(self):
+        
+        antLocationTile = self.posToTileCoords()
+        
         #User probably wants to pick up food
-        if(0):
-            self.queue.popleft()
+        if antLocationTile in self.parent.pos_food:
+            self.pickFoodUp(antLocationTile)
             
         #User probably wants to enter the nest
         elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 2):
