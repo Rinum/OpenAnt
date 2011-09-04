@@ -165,7 +165,6 @@ class Ant():
         self.switchSprite(Globals.datadir + 'images/ants/yellowant_food.png')
         self.queue.popleft() #I hope this is right...
 
-
     def doubleClick(self):
         
         antLocationTile = self.posToTileCoords()
