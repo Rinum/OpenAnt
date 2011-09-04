@@ -94,7 +94,7 @@ class Ant():
                 if newDirection != "":
                     newDirection = "self." + newDirection
                     self.direction = eval(newDirection)
-                    self.sprite.setTextureRect(self.direction) # Update sprite location.
+                    self.sprite.setTextureRect(self.direction) # Update sprite direction.
                     
                 if self.pos == self.nextPos:
                     self.moving = False
@@ -130,7 +130,37 @@ class Ant():
         else:
             print "You Can't Dig There!"
         self.queue.popleft()
+
+    def enterNest(self):
+        print "Enter Nest"
+        Globals.glwidget.camera[0] = Globals.blackNestX
+        Globals.glwidget.camera[1] = Globals.blackNestY
+        Globals.upBound = Globals.blackNestY
+        Globals.downBound *= 2
+        Globals.leftBound = Globals.blackNestX
+        Globals.rightBound = Globals.redNestX
         
+        self.direction = self.S
+        self.sprite.setTextureRect(self.direction) # Update sprite direction.
+        self.pos[0] = Globals.blackNestX
+        self.pos[1] = Globals.blackNestY
+        self.sprite.setDrawRect([self.pos[0] * -1, self.pos[1] * -1, 32, 32])
+        
+        self.queue.popleft()
+        
+    def doubleClick(self):
+        #User probably wants to pick up food
+        if(0):
+            self.queue.popleft()
+            
+        #User probably wants to enter the nest
+        elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 2):
+            self.enterNest()
+
+        #User probably wants to dig
+        elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 0):
+            self.dig()
+            
     # Find a path using A* Manhattan
     def findPath(self):
         start = [self.pos[0] / 32, self.pos[1] / 32]

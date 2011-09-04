@@ -66,23 +66,26 @@ class Map():
         #Populate list of ground tiles
         dirList = os.listdir(self.groundTilesPath)
         for fname in dirList:
-            self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
+            if(fname != "Thumbs.db"):
+                self.groundTiles.append(Tile(self.groundTilesPath + fname, True))
 
         #Populate list of underground tiles
         dirList = os.listdir(self.undergroundTilesPath)
         for fname in dirList:
-            if (fname == "underground1.png"):#underground2.png is for tunnels
-                self.undergroundTiles.append(Tile(self.undergroundTilesPath + fname, True))
+            if(fname != "Thumbs.db"):
+                if (fname == "underground1.png"):#underground2.png is for tunnels
+                    self.undergroundTiles.append(Tile(self.undergroundTilesPath + fname, True))
 
         #Populate list of foliage tiles
         dirList = os.listdir(self.foliageTilesPath)
         for fname in dirList:
-            if "rock" in fname:
-                self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
-            else:
-                self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
+            if(fname != "Thumbs.db"):
+                if "rock" in fname:
+                    self.foliageTiles.append(Tile(self.foliageTilesPath + fname, False))
+                else:
+                    self.foliageTiles.append(Tile(self.foliageTilesPath + fname, True))
 
-        self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=object)
+        self.tiles = numpy.empty([Globals.mapwidth, Globals.mapheight * 2], dtype=object)
         Globals.glwidget.mouseMove.connect(self.moveCamera)
         self.occupiedTiles = {}
 
@@ -109,7 +112,7 @@ class Map():
         
     def generateMap(self):
         for x in range(Globals.mapwidth):
-            for y in range(Globals.mapheight):
+            for y in range(Globals.mapheight * 2):
                 if (y <= Globals.mapheight):
                     if randint(0,10) > 8:
                         self.tiles[x][y] = choice(self.foliageTiles)
@@ -126,37 +129,34 @@ class Map():
         self.yellowAnt = YellowAnt(self,_x, _y, Globals.glwidget.createImage(Globals.datadir + 'images/ants/yellowant.png', 2, [32, 32, 32, 32], [_x * 32, _y * 32, 32, 32]))
         self.occupiedTiles[(_x, _y)] = True
 
-    def getSpawnLocation(self, rangeX = 10, rangeY = 10):
-        _x = randint(0, rangeX)
-        _y = randint(0, rangeY)
+    def getSpawnLocation(self):
+        _x = randint(0, 10)
+        _y = randint(0, 10)
         while not (self.tiles[_x][_y].isPassable() and not self.occupiedTiles.has_key((_x, _y))):
             _x = randint(0, 10)
             _y = randint(0, 10)
         return _x, _y
 
     def spawnOneFood(self):		
-        x, y = self.getSpawnLocation(Globals.mapwidth, Globals.mapheight)
+        x, y = self.getSpawnLocation()
 
         self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
 		
-    def removeOneFood(self, foodLocation):
+    def removeOneFood(self):
         ###remove image, take out of map's food stack, take off of occupiedTiles
-        
         foodParticle = self.pos_food[foodLocation]
-
         Globals.glwidget.deleteImage(foodParticle.sprite) #delete the image (gfx)
         del self.pos_food[foodLocation] #delete the actual food object
         self.occupiedTiles[foodLocation] = False #unoccupy the position
-
  
     def update(self):
         if len(self.yellowAnt.queue):
             self.yellowAnt.queue[0]()
 
-	#if there are less than 20 pieces of food...
-	if len(self.pos_food.keys()) < 20:
-		self.spawnOneFood()
+        #if there are less than 20 pieces of food...
+        if len(self.pos_food.keys()) < 20:
+            self.spawnOneFood()
 
     def getCoords(self, button, x, y):
         '''
@@ -166,9 +166,9 @@ class Map():
         y = (y/Globals.pixelsize)*Globals.pixelsize
         if button == 1:
             if self.lastButton == button and time()-self.lastClick < 0.5 and x == self.lastX and y == self.lastY:
-                if self.yellowAnt.dig in self.yellowAnt.queue:
-                    self.yellowAnt.queue.remove(self.yellowAnt.dig) #Cancel previous dig command
-                self.yellowAnt.queue.append(self.yellowAnt.dig)
+                if self.yellowAnt.doubleClick in self.yellowAnt.queue:
+                    self.yellowAnt.queue.remove(self.yellowAnt.doubleClick) #Cancel previous dig command
+                self.yellowAnt.queue.append(self.yellowAnt.doubleClick)
             else:
                 # Choose a tile that is passable and next to the tile clicked on.
                 while not self.tiles[x/32][y/32].isPassable():
@@ -207,20 +207,20 @@ class Map():
         shiftY = 0
         loop = False
 
-        if x<=(0.1*w) and Globals.glwidget.camera[0] + 16 <= 0:
+        if x<=(0.1*w) and Globals.glwidget.camera[0] + 16 <= Globals.leftBound:
             shiftX = 16
             loop = True
-        if x>=(w - 0.1*w) and Globals.glwidget.camera[0] - 16 >= Globals.mapwidth*-24 +w:
+        if x>=(w - 0.1*w) and Globals.glwidget.camera[0] - 16 >= Globals.rightBound +w:
             shiftX = -16
             loop = True
-        if y<=(0.1*h) and Globals.glwidget.camera[1] + 16 <= 0:
+        if y<=(0.1*h) and Globals.glwidget.camera[1] + 16 <= Globals.upBound:
             shiftY = 16
             loop = True
-        if y>=(h - 0.1*h) and Globals.glwidget.camera[1] - 16 >= Globals.mapheight*-24 +h:
+        if y>=(h - 0.1*h) and Globals.glwidget.camera[1] - 16 >= Globals.downBound +h:
             shiftY = -16
             loop = True
      
-         
+ 
         Globals.glwidget.camera[0] += shiftX
         Globals.glwidget.camera[1] += shiftY
 
