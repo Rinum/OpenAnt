@@ -140,9 +140,15 @@ class Map():
         self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
 		
-    def removeOneFood(self):
+    def removeOneFood(self, foodLocation):
         ###remove image, take out of map's food stack, take off of occupiedTiles
-        pass
+        
+        foodParticle = self.pos_food[foodLocation]
+
+        Globals.glwidget.deleteImage(foodParticle.sprite) #delete the image (gfx)
+        del self.pos_food[foodLocation] #delete the actual food object
+        self.occupiedTiles[foodLocation] = False #unoccupy the position
+
  
     def update(self):
         if len(self.yellowAnt.queue):
@@ -214,7 +220,7 @@ class Map():
             shiftY = -16
             loop = True
      
- 
+         
         Globals.glwidget.camera[0] += shiftX
         Globals.glwidget.camera[1] += shiftY
 
