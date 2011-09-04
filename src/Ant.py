@@ -180,18 +180,26 @@ class Ant():
         
         #User probably wants to pick up food
         if (not self.hasFood) and (antLocationTile in self.parent.pos_food):
+            print 'Pick up food'
             self.pickFoodUp(antLocationTile)
         
-        #User probably wants to set food down (not over nest entrance)
-        elif self.hasFood and sself.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] != 2:
-            self.setFoodDown(antLocationTile)
+        #User probably wants to set food down (not over nest entrance/other food)
+        elif self.hasFood and self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] != 2:
+            if antLocationTile in self.parent.pos_food:
+                print 'No setting food on top of other food'
+                self.queue.popleft()
+            else:                
+                print 'Set down food'
+                self.setFoodDown(antLocationTile)
 
         #User probably wants to enter the nest
         elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 2):
+            print 'Enter Nest'
             self.enterNest()
 
         #User probably wants to dig
         elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 0):
+            print 'Dig Nest'
             self.dig()
             
     # Find a path using A* Manhattan

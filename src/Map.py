@@ -140,21 +140,26 @@ class Map():
     def getSpawnLocationDistribution(self, distCenter = (10, 10)):
         '''Used for food spawning, possibly spawning new ants?''' 
         
-        while True:
-            x, y = numpy.random.normal(distCenter[0], 4), numpy.random.normal(distCenter[1], 4)
-            x, y = int(x), int(y)
-            #check if number is even in map...
-            if x in self.tiles:
-                if y in self.tiles[x]:
-                    if (self.tiles[x][y].isPassable() and not self.occupiedTiles.has_key((x, y))):
-                        return x, y
+        stdDev = 2.7
 
-    def spawnOneFood(self, randomOrigin = (0, 0)):		
-        
-        if randomOrigin == (0, 0):
-            x, y = self.getSpawnLocation()
+        x, y = numpy.random.normal(distCenter[0], stdDev), numpy.random.normal(distCenter[1], stdDev)
+        failCount = 0
+        while True:
+            failCount += 1
+            x, y = numpy.random.normal(distCenter[0], stdDev), numpy.random.normal(distCenter[1], stdDev)
+            x, y = int(x), int(y)
+            #check if number is even in map/check if passable and not occupied
+            if 0 < x < Globals.mapheight and 0 < y < Globals.mapheight:
+                if (self.tiles[x][y].isPassable() and not self.occupiedTiles.has_key((x, y))):
+                    break
+        return x, y
+
+    def spawnOneFood(self, origin = (0, 0), random = False):		
+       
+        if random:
+            x, y = self.getSpawnLocationDistribution(origin)
         else:
-            x, y = self.getSpawnLocationDistribution(randomOrigin)
+            x, y = origin
 
         self.pos_food[(x, y)] = Food(x, y, Globals.glwidget.createImage(Globals.datadir + 'images/food/food.png', 2, [32, 32, 32, 32], [x * 32, y * 32, 32, 32]))
         self.occupiedTiles[(x, y)] = True
@@ -171,8 +176,8 @@ class Map():
             self.yellowAnt.queue[0]()
 
         #if there are less than 20 pieces of food...
-        if len(self.pos_food.keys()) < 20:
-            self.spawnOneFood()
+        if len(self.pos_food.keys()) < 50:
+            self.spawnOneFood((15, 15), random = True)
 
     def getCoords(self, button, x, y):
         '''
