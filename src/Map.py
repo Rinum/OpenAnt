@@ -110,6 +110,7 @@ class Map():
         # Ant Hills
         self.antHills = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=int) # [X Coord][Y Coord] = Type (0:Free,1:Ant Hill,2:Nest Entry)
         
+
     def generateMap(self):
         for x in range(Globals.mapwidth):
             for y in range(Globals.mapheight * 2):
@@ -174,9 +175,9 @@ class Map():
     def update(self):
         if len(self.yellowAnt.queue):
             self.yellowAnt.queue[0]()
-
+        
         #if there are less than 20 pieces of food...
-        if len(self.pos_food.keys()) < 50:
+        while len(self.pos_food.keys()) < 50:
             self.spawnOneFood((15, 15), random = True)
 
     def getCoords(self, button, x, y):

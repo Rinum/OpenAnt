@@ -175,7 +175,7 @@ class Ant():
         self.queue.popleft() 
     
     def doubleClick(self):
-        
+
         antLocationTile = self.posToTileCoords()
         
         #User probably wants to pick up food
@@ -201,7 +201,12 @@ class Ant():
         elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 0):
             print 'Dig Nest'
             self.dig()
-            
+        
+        #Who knows what the user wants to do? But we have to clear the queue event.
+        else:            
+            print 'Dbl clicking here does not do anything...'
+            self.queue.popleft()
+
     # Find a path using A* Manhattan
     def findPath(self):
         start = [self.pos[0] / 32, self.pos[1] / 32]
