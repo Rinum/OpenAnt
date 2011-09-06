@@ -13,3 +13,7 @@ Dependencies:
 Ubuntu packages:
 sudo apt-get install git python-qt4 python-qt4-gl python-opengl python-numpy python-qt4-phonon
 
+Note about glmod:
+-You must build glmod.cpp in the modules directory
+-Doing so may require additional packages
+
