@@ -87,7 +87,7 @@ class OpenAnt(QApplication):
         self.gameLoop()
         
     def gameLoop(self):
-        TICKS_PER_SECOND = 30
+        TICKS_PER_SECOND = 20
         SKIP_TICKS = 1000 / TICKS_PER_SECOND
         MAX_FRAMESKIP = 5
         
@@ -100,9 +100,15 @@ class OpenAnt(QApplication):
                 next_game_tick += SKIP_TICKS
                 loops += 1
             interpolation = float(self.getTickCount() + SKIP_TICKS - next_game_tick) / float(SKIP_TICKS)
-            self.updateDisplay()
+            self.updateDisplay(interpolation)
 
-    def updateDisplay(self):
+    def updateDisplay(self, interpolation):
+        
+        #lerp away
+        if sys.argv[1] == 'lerp':
+            if self.map.yellowAnt.moving:
+                self.map.yellowAnt.lerpMoveSimple(interpolation)
+
         Globals.glwidget.updateGL()
         self.processEvents() # Let Qt process its events.
 
