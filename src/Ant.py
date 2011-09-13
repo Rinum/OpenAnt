@@ -321,8 +321,8 @@ class Ant():
 
     # Find a path using A* Manhattan
     def findPath(self):
-        start = [self.pos[0] / 32, self.pos[1] / 32]
-        end = [self.newPos[0] / 32, self.newPos[1] / 32]
+        start = [int(self.pos[0] / 32), int(self.pos[1] / 32)]
+        end = [int(self.newPos[0] / 32), int(self.newPos[1] / 32)]
         
         # Start and end are the same tile, dont need to move.
         if start == end:
