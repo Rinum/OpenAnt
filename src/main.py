@@ -15,34 +15,28 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Open Ant.  If not, see <http://www.gnu.org/licenses/>.
-
 #
 # starting point of Open Ant
 #
-# By Oipo (kingoipo@gmail.com)
+# By: Oipo (kingoipo@gmail.com), Cibrong
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+import sys
 
-from GLWidget import *
-from Map import *
+from PyQt4.QtCore import QTime
+from PyQt4.QtGui import QMainWindow, QApplication, QPalette, QColor
+
 import Globals
-
+from GLWidget import GLWidget
 if Globals.musicOn:
-    from PyQt4.phonon import *
-    from MusPanel import *
-from LeftPanel import *
-
-from Map import *
-from Ant import *
+    from PyQt4.phonon import Phonon
+    from MusPanel import MusPanel
+from LeftPanel import LeftPanel
+from Map import Map
 
 class MainWindow(QMainWindow):
-    '''Wrapper class for...well, the game? Maybe this needs to be called the game engine then'''
+    '''The main game window, holds all the panels and widgets.'''
 
     def __init__(self):
-        '''
-        Only initialize critical components(like opengl) here, use start() for anything else
-        '''
         QMainWindow.__init__(self)
 
         Globals.glwidget = GLWidget(self)
@@ -54,35 +48,75 @@ class MainWindow(QMainWindow):
             Globals.mediaobject = Phonon.MediaObject(self)
             self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
             Phonon.createPath(Globals.mediaobject, self.audioOutput)
-
-        self.map = Map() #map class
-
-        self.drawTimer = QTimer()
-        self.drawTimer.timeout.connect(self.drawTimerTimeout)
-        self.drawTimer.start(15)
         
     def start(self):
         if Globals.musicOn:
             Globals.muspanel = MusPanel(self)
-            
+        
+        # Load the main game menu panel.
         LeftPanel(self)
         
-        #draw map... set view to ground
+    def closeEvent(self, event):
+        Globals.game_is_running = False
+        event.accept()
+
+
+class OpenAnt(QApplication):
+    
+    def __init__(self):
+        QApplication.__init__(self, sys.argv)
+        
+        # Set the default background color to a darker grey.
+        self.setPalette(QPalette(self.palette().button().color(), QColor(192, 192, 192)))
+    
+        self.window = MainWindow()
+        self.window.show()
+        self.window.start()
+        self.window.setWindowTitle('OpenAnt')
+        
+        # Game timer, used in the gameloop FPS calculations.
+        self.game_timer = QTime()
+        self.game_timer.start()
+        
+        # Draw map, set view to ground.
+        self.map = Map()
         Globals.view = self.map.generateMap()
         self.map.spawnAnts()
+        
+        # Start the main loop.
+        self.gameLoop()
+        
+    def gameLoop(self):
+        TICKS_PER_SECOND = 20
+        SKIP_TICKS = 1000 / TICKS_PER_SECOND
+        MAX_FRAMESKIP = 5
+        
+        next_game_tick = self.getTickCount()
+        Globals.game_is_running = True
+        while Globals.game_is_running:
+            loops = 0
+            while self.getTickCount() > next_game_tick and loops < MAX_FRAMESKIP:
+                self.updateGame()
+                next_game_tick += SKIP_TICKS
+                loops += 1
+            interpolation = float(self.getTickCount() + SKIP_TICKS - next_game_tick) / float(SKIP_TICKS)
+            self.updateDisplay(interpolation)
 
-    def drawTimerTimeout(self):
-        self.map.update()
+    def updateDisplay(self, interpolation):
+       
+        #lerp away
+        if not 'nolerp' in sys.argv:
+            if self.map.yellowAnt.moving:
+                self.map.yellowAnt.lerpMoveSimple(interpolation)
+
         Globals.glwidget.updateGL()
- 
+        self.processEvents() # Let Qt process its events.
+
+    def getTickCount(self):
+        return self.game_timer.elapsed()
+
+    def updateGame(self):
+        self.map.update()
 
 if __name__ == '__main__':
-    app = QApplication(['OpenAnt'])
-    # Set the default background color to a darker grey.
-    app.setPalette(QPalette(app.palette().button().color(), QColor(192, 192, 192)))
-    
-    QPalette.Window
-    window = MainWindow()
-    window.show()
-    window.start()
-    app.exec_()
+    OpenAnt()

@@ -203,7 +203,8 @@ class Map():
                     elif self.yellowAnt.pos[1] > y:
                         y += 32
                 self.yellowAnt.newPos = [x, y]
-                if self.yellowAnt.move in self.yellowAnt.queue: #User decided to perform a different action sequence
+                if self.yellowAnt.moveAlongPath in self.yellowAnt.queue: #User decided to perform a different action sequence
+                    print 'remove queue'
                     self.yellowAnt.queue.clear() #Clear queued actions
                     self.yellowAnt.path.clear() #Clear path so ant can move to new location
                 self.yellowAnt.queue.append(self.yellowAnt.findPath)
@@ -212,6 +213,8 @@ class Map():
         self.lastClick = time()
         self.lastX = x;
         self.lastY = y;
+        print self.yellowAnt.queue
+        print self.yellowAnt.path
         
     def getTile(self, x, y):
         return self.tiles[x][y]

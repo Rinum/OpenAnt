@@ -23,6 +23,7 @@ from PyQt4.QtCore import *
 from algo.astar import *
 import collections
 from random import *
+import math
 
 class Ant():
     '''
@@ -69,6 +70,96 @@ class Ant():
         Globals.glwidget.deleteImage(self.sprite)
         self.sprite = Globals.glwidget.createImage(imgLocation, 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
 
+    def traverseLineSeqment(self, distanceToTravel):
+        '''Used to easily calculate new positions and positional overflow
+        Might not be efficient ant by ant, but if we put all ant positions in an array
+        and then calculate it will be fast.  For now I used math instead of numpy
+        because it is faster when not using arrays.  Doing it this way also allows an easy
+        transition to absolute (non-tile) movement if we want to change it.
+        ---> (newPosition, overflow)'''
+
+        #nifty arctan that takes quadrant into consideration (goes y then x)
+        rads = math.atan2(self.nextPos[1] - self.pos[1], self.nextPos[0] - self.pos[0])
+
+        #proportion of the distance we apply to each axis, takes into account (-) rad values
+        _xProportion = math.cos(rads)
+        _yProportion = math.sin(rads)
+
+        newPosition = ( self.pos[0] + _xProportion*distanceToTravel, #new x pos 
+                        self.pos[1] + _yProportion*distanceToTravel) #new y pos 
+
+        #check if you moved past self.nextPos and report the amount, set newPos to self.nextPos if true. 
+        movedDistance = math.sqrt( (newPosition[0] - self.pos[0])**2 + (newPosition[1] - self.pos[1])**2 )
+        distanceToPathEnd = math.sqrt( (self.nextPos[0] - self.pos[0])**2 + (self.nextPos[1] - self.pos[1])**2 )
+
+        if movedDistance > distanceToPathEnd: 
+            _distanceOverflow = movedDistance - distanceToPathEnd 
+            return (self.nextPos, _distanceOverflow)
+        else:
+            return (newPosition, 0)
+
+    def updateDirection(self):
+        '''--> True or False (whether direction changed)'''
+        
+        #we aren't heading anywhere, retain current direction
+        if self.pos == self.nextPos:
+            return False
+        
+        #if we are going somewhere
+        newDirection = ''
+        if self.pos[0] < self.nextPos[0]:
+            newDirection = "E"
+        elif self.pos[0] > self.nextPos[0]:
+            newDirection = "W"
+        if self.pos[1] < self.nextPos[1]:
+            newDirection = "S" + newDirection
+        elif self.pos[1] > self.nextPos[1]:
+            newDirection = "N" + newDirection
+        
+        newDirection = "self." + newDirection
+        newDirection = eval(newDirection)
+        if self.direction == newDirection:
+            return False
+        else:
+            self.direction = newDirection
+            return True
+
+
+    def moveAlongPath(self):
+        '''Attempts to take care of stuttering
+        - Only pops path once destination is reached, that way path ALWAYS represents where we are going
+        - Moves until ALL distance is depleted, not just if next tile if reached'''
+
+        #if this is first move call in series(don't pop!)
+        if not self.moving:
+            self.moving = True
+            self.nextPos = self.path[0]
+            self.nextPos = self.nextPos[0] * 32, self.nextPos[1] * 32
+
+        #update position till distance depletes
+        directionChanged = False
+        distanceLeft = self.speed
+        while len(self.path) and distanceLeft:
+            '''move position until you run out of distance'''
+            directionChanged = self.updateDirection() #must be before pos change.!!!exec every loop?
+            self.pos, distanceLeft = self.traverseLineSeqment(distanceLeft)    
+            
+            #update next position if we aren't there yet
+            if self.pos == self.nextPos: 
+                self.path.popleft()
+                if len(self.path):
+                    self.nextPos = self.path[0]
+                    self.nextPos = self.nextPos[0] * 32, self.nextPos[1] * 32
+        
+        #Update Sprite (position and direction) 
+        if directionChanged: self.sprite.setTextureRect(self.direction) 
+        self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
+        
+        #check if done moving (reached ultimate destination, not just next tile)
+        if not self.path:
+            self.queue.popleft()
+            self.moving = False
+            
     def move(self):
         if len(self.path) or self.pos != self.nextPos:
             if self.moving:
@@ -116,6 +207,27 @@ class Ant():
             self.queue.popleft() #Ant has reached its destination.
         
         self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
+
+
+    def lerpMoveSimple(self, interTime):
+        '''just move using direction/speed
+        - no moving past next tile/change direction'''
+
+        distanceToTravel = self.speed * interTime
+
+        #traverse makes no state changes
+        newPos, overDistance = self.traverseLineSeqment(distanceToTravel) 
+        self.sprite.setDrawRect([newPos[0], newPos[1], 32, 32])
+
+    def lerpMove(self, interTime):
+        '''Differs from simple in that it will go to next tile. Change Direction'''
+        
+        #speed is pixels/logic loop
+        amount = interTime*self.speed
+
+        #problem with this is it updates position...
+        #self.moveAlongPath()
+        #need to make lerpAlongPath that doesn't update...
 
     def dig(self):
         #check if Ant Hill can be built
@@ -209,8 +321,8 @@ class Ant():
 
     # Find a path using A* Manhattan
     def findPath(self):
-        start = [self.pos[0] / 32, self.pos[1] / 32]
-        end = [self.newPos[0] / 32, self.newPos[1] / 32]
+        start = [int(self.pos[0] / 32), int(self.pos[1] / 32)]
+        end = [int(self.newPos[0] / 32), int(self.newPos[1] / 32)]
         
         # Start and end are the same tile, dont need to move.
         if start == end:
@@ -224,17 +336,19 @@ class Ant():
         
         a.step(q)
 
-        for elem in a.path:
-            self.path.append(elem)
+        self.path.clear()
+        self.path.extend(a.path)
         
-        if not len(self.path):
+        if not self.path:
             self.queue.popleft()
             return
         
+        #Not sure what this does?
         self.path.popleft()
         
+
         self.queue.popleft()
-        self.queue.append(self.move)
+        self.queue.append(self.moveAlongPath)
     
     def findAltPath(self, avoid):
         start = [self.pos[0] / 32, self.pos[1] / 32]
