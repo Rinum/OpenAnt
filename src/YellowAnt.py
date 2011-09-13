@@ -27,4 +27,4 @@ from Ant import *
 class YellowAnt(Ant):
     def __init__(self, xpos, ypos, tiles, sprite):
         Ant.__init__(self, xpos, ypos, tiles, sprite)
-        self.speed = 5
+        self.speed = 7 

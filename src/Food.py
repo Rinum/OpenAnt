@@ -20,9 +20,6 @@
 from GLWidget import *
 from PyQt4.QtCore import *
 
-from algo.astar import *
-import collections
-from random import *
 
 class Food():
     '''

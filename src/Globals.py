@@ -30,6 +30,8 @@ pixelsize = 32
 mapheight = 32
 mapwidth = 64
 
+game_is_running = False
+
 #nest coordinates
 blackNestX = 0
 blackNestY = -1 * pixelsize * (mapheight + 1)
