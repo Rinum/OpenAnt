@@ -23,6 +23,7 @@ from PyQt4.QtCore import *
 from algo.astar import *
 import collections
 from random import *
+import math
 
 class Ant():
     '''
@@ -72,27 +73,27 @@ class Ant():
     def traverseLineSeqment(self, distanceToTravel):
         '''Used to easily calculate new positions and positional overflow
         Might not be efficient ant by ant, but if we put all ant positions in an array
-        and then calculate it will be fast.  Doing it this way also allows an easy
+        and then calculate it will be fast.  For now I used math instead of numpy
+        because it is faster when not using arrays.  Doing it this way also allows an easy
         transition to absolute (non-tile) movement if we want to change it.
         ---> (newPosition, overflow)'''
 
         #nifty arctan that takes quadrant into consideration (goes y then x)
-        rads = numpy.arctan2(self.nextPos[1] - self.pos[1], self.nextPos[0] - self.pos[0])
+        rads = math.atan2(self.nextPos[1] - self.pos[1], self.nextPos[0] - self.pos[0])
 
         #proportion of the distance we apply to each axis, takes into account (-) rad values
-        _xProportion = numpy.cos(rads)
-        _yProportion = numpy.sin(rads)
+        _xProportion = math.cos(rads)
+        _yProportion = math.sin(rads)
 
         newPosition = ( self.pos[0] + _xProportion*distanceToTravel, #new x pos 
                         self.pos[1] + _yProportion*distanceToTravel) #new y pos 
 
         #check if you moved past self.nextPos and report the amount, set newPos to self.nextPos if true. 
-        a = numpy.absolute(self.nextPos)
-        b = numpy.absolute(newPosition)
+        movedDistance = math.sqrt( (newPosition[0] - self.pos[0])**2 + (newPosition[1] - self.pos[1])**2 )
+        distanceToPathEnd = math.sqrt( (self.nextPos[0] - self.pos[0])**2 + (self.nextPos[1] - self.pos[1])**2 )
 
-        if (b-a)[1] < 0: #only have to check one...
-            #for arrays, this will have to be replaced by a numpy geometric sum (sum can occur on one axis!)
-            _distanceOverflow = numpy.linalg.norm(b - a)
+        if movedDistance > distanceToPathEnd: 
+            _distanceOverflow = movedDistance - distanceToPathEnd 
             return (self.nextPos, _distanceOverflow)
         else:
             return (newPosition, 0)
@@ -216,7 +217,7 @@ class Ant():
 
         #traverse makes no state changes
         newPos, overDistance = self.traverseLineSeqment(distanceToTravel) 
-        self.sprite.setDrawRect(newPos[0], newPos[1], 32, 32)
+        self.sprite.setDrawRect([newPos[0], newPos[1], 32, 32])
 
     def lerpMove(self, interTime):
         '''Differs from simple in that it will go to next tile. Change Direction'''
@@ -336,10 +337,9 @@ class Ant():
         a.step(q)
 
         self.path.clear()
-        for elem in a.path:
-            self.path.append(elem)
+        self.path.extend(a.path)
         
-        if not len(self.path):
+        if not self.path:
             self.queue.popleft()
             return
         

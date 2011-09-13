@@ -103,9 +103,9 @@ class OpenAnt(QApplication):
             self.updateDisplay(interpolation)
 
     def updateDisplay(self, interpolation):
-        
+       
         #lerp away
-        if sys.argv[1] == 'lerp':
+        if not 'nolerp' in sys.argv:
             if self.map.yellowAnt.moving:
                 self.map.yellowAnt.lerpMoveSimple(interpolation)
 
