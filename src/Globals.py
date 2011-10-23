@@ -32,7 +32,7 @@ mapwidth = 64
 
 game_is_running = False
 
-#nest coordinates
+#nest camera coordinates
 blackNestX = 0
 blackNestY = -1 * pixelsize * (mapheight + 1)
 redNestX = -1 * pixelsize * (mapwidth * 0.5)

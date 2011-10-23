@@ -108,7 +108,7 @@ class Map():
         self.pos_food = {}
 
         # Ant Hills
-        self.antHills = numpy.empty([Globals.mapwidth, Globals.mapheight], dtype=int) # [X Coord][Y Coord] = Type (0:Free,1:Ant Hill,2:Nest Entry)
+        self.antHills = numpy.zeros([Globals.mapwidth, Globals.mapheight], dtype=int) # [X Coord][Y Coord] = Type (0:Free,1:Ant Hill,2:Nest Entry)
         
 
     def generateMap(self):

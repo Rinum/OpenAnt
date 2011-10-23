@@ -52,6 +52,7 @@ class Ant():
         self.sprite.setTextureRect(self.S)
         self.direction = self.S
         self.queue = collections.deque()
+        self.underground = False
         
         self.speed = 4
         
@@ -254,19 +255,22 @@ class Ant():
         self.queue.popleft()
 
     def enterNest(self):
-        print "Enter Nest"
+        print "Enter Nest2"
         Globals.glwidget.camera[0] = Globals.blackNestX
         Globals.glwidget.camera[1] = Globals.blackNestY
         Globals.upBound = Globals.blackNestY
         Globals.downBound *= 2
         Globals.leftBound = Globals.blackNestX
         Globals.rightBound = Globals.redNestX
+
+        self.underground = True
         
         self.direction = self.S
         self.sprite.setTextureRect(self.direction) # Update sprite direction.
-        self.pos[0] = Globals.blackNestX
-        self.pos[1] = Globals.blackNestY
-        self.sprite.setDrawRect([self.pos[0] * -1, self.pos[1] * -1, 32, 32])
+        self.pos = list(self.pos)
+        self.pos[0] = abs(Globals.blackNestX)
+        self.pos[1] = abs(Globals.blackNestY)
+        self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
         
         self.queue.popleft()
         
@@ -322,7 +326,7 @@ class Ant():
     def findPath(self):
         start = [int(self.pos[0] / 32), int(self.pos[1] / 32)]
         end = [int(self.newPos[0] / 32), int(self.newPos[1] / 32)]
-        
+        print start, end, self.pos, self.newPos
         # Start and end are the same tile, dont need to move.
         if start == end:
             self.queue.popleft()
@@ -335,6 +339,12 @@ class Ant():
         
         a.step(q)
 
+        #Oipo: surely the entire remove 32, add 32 deal that is done here can be optimised...I just am too lazy right now
+        if self.underground:
+            for i in range(len(a.path)):
+                a.path[i] = list(a.path[i])
+                a.path[i][1] += 32
+
         self.path.clear()
         self.path.extend(a.path)
         
@@ -343,6 +353,7 @@ class Ant():
             return
         
         #Not sure what this does?
+        #Oipo: I think it removes the starting location, namely the location of the ant?
         self.path.popleft()
         
 
@@ -356,6 +367,10 @@ class Ant():
         if start == end:
             self.queue.popleft()
             return
+
+        if self.underground:
+            start[1] -= Globals.mapheight
+            end[1] -= Globals.mapheight
         
         map = self.getMap(start, end, avoid)
         
@@ -378,7 +393,11 @@ class Ant():
         """Generate a string representation of the map."""
         output = ""
 
-        for i in range(Globals.mapheight):
+        add = 0
+        if self.underground:
+            add = Globals.mapheight
+
+        for i in range(add, Globals.mapheight+add):
             for j in range(Globals.mapwidth):
                 if avoid is None:
                     if start[0] == j and start[1] == i:
@@ -401,4 +420,5 @@ class Ant():
                     else:
                         output += BLOCKED
             output += "\n"
+
         return output
