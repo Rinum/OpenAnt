@@ -30,5 +30,3 @@ class Food():
         self.pos = [xpos * 32, ypos * 32]
 
         self.sprite = sprite
-        self.sprite.setTextureRect([32, 32, 32, 32])
-

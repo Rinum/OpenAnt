@@ -528,12 +528,19 @@ class GLWidget(QGLWidget):
         '''
         if self.vbos:
             self.calculateVBOList(image, True)
-            image._layer = newLayer
-            if newLayer not in self.images:
-                self.images[newLayer] = []
-                self.layers = self.images.keys()
-                self.layers.sort()
-                image.createLayer = True
+
+        oldLayer = image._layer
+        image._layer = newLayer
+        if newLayer not in self.images:
+            self.images[newLayer] = []
+            self.layers = self.images.keys()
+            self.layers.sort()
+            image.createLayer = True
+
+        self.images[oldLayer].remove(image)
+        self.images[newLayer].append(image)
+
+        if self.vbos:
             self.calculateVBOList(image)
             
     def getImageSize(self, image):

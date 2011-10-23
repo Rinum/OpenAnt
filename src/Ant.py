@@ -60,15 +60,16 @@ class Ant():
         self.moving = False
         self.hasFood = False
  
-    def setSprite(self, sprite):
-        self.sprite = sprite
-        
     def switchSprite(self, imgLocation):
         '''Not sure if I should use the setSprite Command above'''
         
-        #delete previous sprite/add new one
-        Globals.glwidget.deleteImage(self.sprite)
-        self.sprite = Globals.glwidget.createImage(imgLocation, 2, [32, 32, 32, 32], [self.pos[0], self.pos[1], 32, 32])
+        if imgLocation != self.sprite.imagepath:
+            #delete previous sprite/add new one
+            Globals.glwidget.deleteImage(self.sprite)
+            self.sprite = Globals.glwidget.createImage(imgLocation, 2, self.direction, [self.pos[0], self.pos[1], 32, 32])
+        else:
+            #update sprite with new position
+            self.sprite.setDrawRect([self.pos[0], self.pos[1], 32, 32])
 
     def traverseLineSeqment(self, distanceToTravel):
         '''Used to easily calculate new positions and positional overflow
@@ -275,14 +276,12 @@ class Ant():
     def pickFoodUp(self, antLocationTile):
         self.parent.removeOneFood(antLocationTile)
         self.switchSprite(Globals.datadir + 'images/ants/yellowant_food.png')
-        self.sprite.setTextureRect(self.direction)
         self.hasFood = True
         self.queue.popleft() #I hope this is right...
 
     def setFoodDown(self, antLocationTile):
         self.parent.spawnOneFood(antLocationTile)
         self.switchSprite(Globals.datadir + 'images/ants/yellowant.png')
-        self.sprite.setTextureRect(self.direction)
         self.hasFood = False
         self.queue.popleft() 
     
