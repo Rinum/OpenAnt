@@ -2,7 +2,7 @@
 glmod.so
 glmod.pyd
 Thumbs.db
-.error.swp
+*.swp
 error
 .pydevproject
 .project
