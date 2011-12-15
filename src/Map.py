@@ -122,6 +122,9 @@ class Map():
                 else:
                     self.tiles[x][y] = choice(self.undergroundTiles) #underground map
 
+        # Starts in a tunnel underground
+        self.tiles[0][33] = Tile(Globals.datadir + 'images/underground/underground2.png', True)
+
         return View(self.tiles[:,:]) #tiles[every x, every y]
 
     def spawnAnts(self):
@@ -171,6 +174,10 @@ class Map():
         Globals.glwidget.deleteImage(foodParticle.sprite) #delete the image (gfx)
         del self.pos_food[foodLocation] #delete the actual food object
         self.occupiedTiles[foodLocation] = False #unoccupy the position
+
+    def digTunnel(self, tunnelLocation):
+        x, y = tunnelLocation
+        Globals.view.updateTile(x, y, Globals.datadir + 'images/underground/underground2.png')
  
     def update(self):
         if len(self.yellowAnt.queue):
