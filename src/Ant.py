@@ -274,6 +274,11 @@ class Ant():
         
         self.queue.popleft()
         
+    def digTunnel(self, antLocationTile):
+        print "Dig tunnel"
+        self.parent.digTunnel(antLocationTile)
+        self.queue.popleft()
+
     def posToTileCoords(self):
         return (self.pos[0]/32, self.pos[1]/32)
 
@@ -293,34 +298,45 @@ class Ant():
 
         antLocationTile = self.posToTileCoords()
         
-        #User probably wants to pick up food
-        if (not self.hasFood) and (antLocationTile in self.parent.pos_food):
-            print 'Pick up food'
-            self.pickFoodUp(antLocationTile)
-        
-        #User probably wants to set food down (not over nest entrance/other food)
-        elif self.hasFood and self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] != 2:
-            if antLocationTile in self.parent.pos_food:
-                print 'No setting food on top of other food'
+        #Different set of functions while underground
+        #User is underground and probably wants to dig a tunnel
+        if self.underground:
+            if 'underground1.png' in self.parent.getTile(antLocationTile[0], antLocationTile[1]).image: #math.fabs(antLocationTile[0]-x) == 1 or math.fabs(antLocationTile[1]-y) == 1:
+                print 'Dig tunnel'
+                self.digTunnel(antLocationTile)
+                #self.digTunnel((x,y))
+            #else:
+                #self.queue.popleft()
+
+        else:
+            #User probably wants to pick up food
+            if (not self.hasFood) and (antLocationTile in self.parent.pos_food):
+                print 'Pick up food'
+                self.pickFoodUp(antLocationTile)
+            
+            #User probably wants to set food down (not over nest entrance/other food)
+            elif self.hasFood and self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] != 2:
+                if antLocationTile in self.parent.pos_food:
+                    print 'No setting food on top of other food'
+                    self.queue.popleft()
+                else:                
+                    print 'Set down food'
+                    self.setFoodDown(antLocationTile)
+
+            #User probably wants to enter the nest
+            elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 2):
+                print 'Enter Nest'
+                self.enterNest()
+
+            #User probably wants to dig
+            elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 0):
+                print 'Dig Nest'
+                self.dig()
+            
+            #Who knows what the user wants to do? But we have to clear the queue event.
+            else:            
+                print 'Dbl clicking here does not do anything...'
                 self.queue.popleft()
-            else:                
-                print 'Set down food'
-                self.setFoodDown(antLocationTile)
-
-        #User probably wants to enter the nest
-        elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 2):
-            print 'Enter Nest'
-            self.enterNest()
-
-        #User probably wants to dig
-        elif(self.parent.antHills[(self.pos[0]/32)][(self.pos[1]/32)] == 0):
-            print 'Dig Nest'
-            self.dig()
-        
-        #Who knows what the user wants to do? But we have to clear the queue event.
-        else:            
-            print 'Dbl clicking here does not do anything...'
-            self.queue.popleft()
 
     # Find a path using A* Manhattan
     def findPath(self):
