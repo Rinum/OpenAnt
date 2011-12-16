@@ -177,7 +177,8 @@ class Map():
 
     def digTunnel(self, tunnelLocation):
         x, y = tunnelLocation
-        Globals.view.updateTile(x, y, Globals.datadir + 'images/underground/underground2.png')
+        self.tiles[x][y] = Tile(Globals.datadir + 'images/underground/underground2.png', True)
+        Globals.view.updateTile(self.tiles[x][y], x, y)
  
     def update(self):
         if len(self.yellowAnt.queue):

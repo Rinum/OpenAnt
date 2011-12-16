@@ -64,6 +64,6 @@ class View():
         Globals.glwidget.camera[0] = x
         Globals.glwidget.camera[1] = y
 
-    def updateTile(self, x, y, image, hidden = False):
+    def updateTile(self, tile, x, y, hidden = False):
         Globals.glwidget.deleteImage(self.tiles[x][y])
-        self.tiles[x][y] = Globals.glwidget.createImage(image, 0, [1, 1, -1, -1], [x*Globals.pixelsize, y*Globals.pixelsize, -1, -1], hidden)
+        self.tiles[x][y] = Globals.glwidget.createImage(tile.image, 0, [1, 1, -1, -1], [x*Globals.pixelsize, y*Globals.pixelsize, -1, -1], hidden)
