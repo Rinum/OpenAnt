@@ -32,3 +32,4 @@ You can look for information at:
 
 [1]: http://en.wikipedia.org/wiki/SimAnt
 [2]: http://whatbrowser.org/
+[6]: http://www.gnu.org/copyleft/gpl.html
