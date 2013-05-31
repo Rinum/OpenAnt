@@ -6,13 +6,14 @@
       |                               
       '  
 
-Goal: SimAnt inspired multiplayer game which is playable in-browser.
-Wishful Thinking: ??? PROFIT!
+Short-Term Goal: Playable SimAnt style 1v1 multiplayer desktop game.
+Long-Term Goal: SimAnt inspired MMO which is playable in-browser.
+Wishful Thinking: ??? PROFIT! ... maybe create a python based Game/MMO/Sim engine out of the completed game.
 
 PROGRESS(%) - MILESTONES
               (Completed)->Sub-task
 
-(0%) - Get a working user interface with some basic graphics
+(1%) - Get a working user interface with some basic graphics
           -> Tiles
              -> Ground
              -> Foliage
