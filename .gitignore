@@ -7,3 +7,6 @@ error
 .pydevproject
 .project
 /.settings
+nbproject
+*.log
+logs
