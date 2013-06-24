@@ -1,4 +1,4 @@
-Open Ant is a Python-based MMO inspired by [Sim Ant][1]
+Open Ant is a Browser-based MMO inspired by [Sim Ant][1]
 
 # Dependencies
 
