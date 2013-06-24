@@ -10,24 +10,32 @@
 		<link rel="stylesheet" href="css/normalize.min.css">
 		<link rel="stylesheet" href="css/main.css">
 
-		<!--[if lt IE 9]>
-		    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-		    <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
-		<![endif]-->
-
-		<script src="/socket.io/socket.io.js"></script>
-		<script>
-			var host = window.location.hostname !== 'localhost' ? 'ws.' + window.location.hostname : 'localhost';
-			var socket = io.connect(host);
-			socket.on('news', function(data) {
-				console.log(data);
-				socket.emit('my other event', {my: 'data'});
-			});
-		</script>
-	</head>
-	<body>
-		<canvas id="viewport">
+		<!-- Base -->
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 			
-		</canvas>
+		<!-- Modules -->
+		<script type="text/javascript" src="js/Prime/Modules/moment.min.js"></script>
+		<script type="text/javascript" src="js/Prime/Modules/Socket.js"></script>
+		<script type="text/javascript" src="js/Prime/Modules/pixi.js"></script>
+		
+		<!-- Libs -->
+		<script type="text/javascript" src="js/Prime/Libs/Polyfills.js"></script>
+		<script type="text/javascript" src="js/Prime/Libs/Prime.js"></script>
+		
+		<!-- Controllers -->
+		<script type="text/javascript" src="js/Prime/Controllers/PrimeController.js"></script>
+		<script type="text/javascript" src="js/Prime/Controllers/FPSController.js"></script>
+		
+		<!-- Objects -->
+		<script type="text/javascript" src="js/Prime/Objects/PrimeObject.js"></script>		
+		<script type="text/javascript" src="js/Prime/Objects/FPS.js"></script>
+		
+		<!-- Custom Lib Extensions -->
+		<script type="text/javascript" src="js/OpenAnt.js"></script>
+	</head>
+	<body onload="OpenAnt = (new Prime()).run();">
+		<div id="viewport">
+			
+		</div>
 	</body>
 </html>
